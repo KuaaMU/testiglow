@@ -74,7 +74,7 @@ export default async function WidgetsPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {widgetList.map((widget) => {
             const testimonialCount = widget.testimonial_ids?.length ?? 0;
-            const embedCode = `<script src="${process.env.NEXT_PUBLIC_APP_URL || 'https://your-domain.com'}/embed.js" data-widget-id="${widget.id}"></script>\n<div id="testiglow-widget"></div>`;
+            const embedCode = `<script src="${process.env.NEXT_PUBLIC_APP_URL || 'https://your-domain.com'}/embed.js" data-widget-id="${widget.id}"></script>\n<div id="testiSpark-widget"></div>`;
 
             return (
               <Card key={widget.id}>

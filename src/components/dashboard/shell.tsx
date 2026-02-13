@@ -74,7 +74,7 @@ export function DashboardShell({
         <div className="p-4 border-b">
           <Link href="/" className="flex items-center gap-2 font-bold text-lg">
             <MessageSquareHeart className="size-5 text-indigo-600" />
-            TestiGlow
+            TestiSpark
           </Link>
         </div>
         <div className="flex-1 p-4">
@@ -104,7 +104,7 @@ export function DashboardShell({
         <header className="md:hidden flex items-center justify-between border-b bg-white px-4 h-14">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <MessageSquareHeart className="size-5 text-indigo-600" />
-            TestiGlow
+            TestiSpark
           </Link>
           <MobileNav pathname={pathname} onLogout={handleLogout} />
         </header>
@@ -140,7 +140,7 @@ function MobileNav({ pathname, onLogout }: { pathname: string; onLogout: () => v
       <SheetContent side="left" className="w-64 p-4">
         <SheetTitle className="flex items-center gap-2 font-bold text-lg mb-6">
           <MessageSquareHeart className="size-5 text-indigo-600" />
-          TestiGlow
+          TestiSpark
         </SheetTitle>
         <NavLinks pathname={pathname} />
         <div className="mt-8 pt-4 border-t">

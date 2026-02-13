@@ -378,7 +378,7 @@ export default function NewWidgetPage() {
                 color: theme === 'light' ? '#94a3b8' : '#64748b',
               }}
             >
-              Powered by TestiGlow
+              Powered by TestiSpark
             </div>
           </div>
         </div>

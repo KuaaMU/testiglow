@@ -45,7 +45,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-2 mb-2">
             <MessageSquareHeart className="size-6 text-indigo-600" />
-            <span className="font-bold text-xl">TestiGlow</span>
+            <span className="font-bold text-xl">TestiSpark</span>
           </Link>
           <CardTitle>Welcome back</CardTitle>
           <CardDescription>Sign in to your account</CardDescription>

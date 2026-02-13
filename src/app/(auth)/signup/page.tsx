@@ -51,7 +51,7 @@ export default function SignupPage() {
         <CardHeader className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-2 mb-2">
             <MessageSquareHeart className="size-6 text-indigo-600" />
-            <span className="font-bold text-xl">TestiGlow</span>
+            <span className="font-bold text-xl">TestiSpark</span>
           </Link>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>Start collecting testimonials for free</CardDescription>

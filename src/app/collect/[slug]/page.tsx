@@ -407,7 +407,7 @@ export default function CollectPage() {
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-400">
           Powered by{' '}
-          <span className="font-semibold text-gray-500">TestiGlow</span>
+          <span className="font-semibold text-gray-500">TestiSpark</span>
         </p>
       </div>
     </div>

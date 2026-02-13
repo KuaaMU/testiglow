@@ -48,7 +48,7 @@ export default function LandingPage() {
         {/* Mock Wall of Love */}
         <div className="max-w-5xl mx-auto mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { name: "Sarah Chen", role: "CEO at TechCo", text: "TestiGlow transformed how we collect customer feedback. Our conversion rate increased by 40%!", rating: 5 },
+            { name: "Sarah Chen", role: "CEO at TechCo", text: "TestiSpark transformed how we collect customer feedback. Our conversion rate increased by 40%!", rating: 5 },
             { name: "Marcus Johnson", role: "Founder, DevStudio", text: "Simple, beautiful, and effective. We went from zero social proof to a stunning Wall of Love in minutes.", rating: 5 },
             { name: "Emily Rodriguez", role: "Marketing Lead", text: "The AI highlights feature saves us hours. It automatically pulls the best quotes from long testimonials.", rating: 5 },
           ].map((t, i) => (
@@ -80,7 +80,7 @@ export default function LandingPage() {
             Everything you need
           </h2>
           <p className="text-center text-gray-600 mb-12 max-w-xl mx-auto">
-            From collection to display, TestiGlow handles the entire testimonial lifecycle.
+            From collection to display, TestiSpark handles the entire testimonial lifecycle.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
             {[
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   "Up to 15 testimonials",
                   "1 collection form",
                   "Wall of Love widget",
-                  "\"Powered by TestiGlow\" badge",
+                  "\"Powered by TestiSpark\" badge",
                   "Email support",
                 ].map((f, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
@@ -218,7 +218,7 @@ export default function LandingPage() {
             Ready to collect your first testimonial?
           </h2>
           <p className="text-gray-600 mb-8">
-            Join hundreds of businesses using TestiGlow to boost conversions with social proof.
+            Join hundreds of businesses using TestiSpark to boost conversions with social proof.
           </p>
           <Link
             href="/signup"

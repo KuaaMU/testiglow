@@ -27,7 +27,7 @@ export default function PricingPage() {
                 "1 collection form",
                 "Wall of Love widget",
                 "Basic testimonial cards",
-                "\"Powered by TestiGlow\" badge",
+                "\"Powered by TestiSpark\" badge",
                 "Community support",
               ].map((f, i) => (
                 <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
@@ -60,7 +60,7 @@ export default function PricingPage() {
                 "Unlimited testimonials",
                 "Unlimited collection forms",
                 "AI-powered highlights & tags",
-                "Remove TestiGlow branding",
+                "Remove TestiSpark branding",
                 "Custom widget themes",
                 "Carousel & badge widgets",
                 "Video testimonials",
@@ -86,8 +86,8 @@ export default function PricingPage() {
           <h3 className="font-semibold text-gray-900 mb-2">Need more?</h3>
           <p className="text-sm text-gray-500">
             Contact us at{" "}
-            <a href="mailto:hello@testiglow.com" className="text-indigo-600 hover:underline">
-              hello@testiglow.com
+            <a href="mailto:hello@testispark.com" className="text-indigo-600 hover:underline">
+              hello@testispark.com
             </a>{" "}
             for custom enterprise plans.
           </p>

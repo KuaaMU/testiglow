@@ -186,7 +186,7 @@
 
     // Powered by footer
     html += '<div class="tg-footer">';
-    html += '<a href="https://testiglow.com" target="_blank" rel="noopener noreferrer">Powered by TestiGlow</a>';
+    html += '<a href="https://testispark.com" target="_blank" rel="noopener noreferrer">Powered by TestiSpark</a>';
     html += '</div>';
 
     wrapper.innerHTML = html;
@@ -209,7 +209,7 @@
         var widgetId = scriptEl.getAttribute('data-widget-id');
         if (!widgetId) return;
 
-        // Find the target container - look for next sibling div with id testiglow-widget,
+        // Find the target container - look for next sibling div with id testiSpark-widget,
         // or create one after the script tag
         var target = null;
 
@@ -217,8 +217,8 @@
         var sibling = scriptEl.nextElementSibling;
         while (sibling) {
           if (
-            sibling.id === 'testiglow-widget' ||
-            sibling.getAttribute('data-testiglow-target') === widgetId
+            sibling.id === 'testiSpark-widget' ||
+            sibling.getAttribute('data-testiSpark-target') === widgetId
           ) {
             target = sibling;
             break;
@@ -228,13 +228,13 @@
 
         // If no target found, also check by id
         if (!target) {
-          target = document.getElementById('testiglow-widget');
+          target = document.getElementById('testiSpark-widget');
         }
 
         // If still no target, create one
         if (!target) {
           target = document.createElement('div');
-          target.id = 'testiglow-widget';
+          target.id = 'testiSpark-widget';
           scriptEl.parentNode.insertBefore(target, scriptEl.nextSibling);
         }
 
@@ -258,7 +258,7 @@
           .catch(function (err) {
             // Fail silently - show nothing if API fails
             if (typeof console !== 'undefined' && console.error) {
-              console.error('TestiGlow: Failed to load widget', err);
+              console.error('TestiSpark: Failed to load widget', err);
             }
           });
       })(scripts[i]);

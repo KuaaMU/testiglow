@@ -12,7 +12,7 @@ export default function MarketingLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 font-bold text-xl">
             <MessageSquareHeart className="size-6 text-indigo-600" />
-            <span>TestiGlow</span>
+            <span>TestiSpark</span>
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-gray-600">
             <Link href="/#features" className="hover:text-gray-900">Features</Link>
@@ -41,7 +41,7 @@ export default function MarketingLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <MessageSquareHeart className="size-4 text-indigo-600" />
-            <span>&copy; {new Date().getFullYear()} TestiGlow. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} TestiSpark. All rights reserved.</span>
           </div>
           <div className="flex gap-6">
             <Link href="/privacy" className="hover:text-gray-700">Privacy Policy</Link>

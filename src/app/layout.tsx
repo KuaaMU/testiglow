@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TestiGlow - Collect & Display Customer Testimonials",
+  title: "TestiSpark - Collect & Display Customer Testimonials",
   description:
     "The easiest way to collect, manage, and showcase customer testimonials. Boost conversions with social proof. Free to start.",
 };

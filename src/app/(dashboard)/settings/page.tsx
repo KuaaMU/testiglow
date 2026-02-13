@@ -1,8 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PaddleCheckoutButton } from "@/components/dashboard/paddle-checkout";
-import { getPaddleEnvironment, getPaddlePriceId } from "@/lib/paddle";
+import { LemonSqueezyCheckoutButton } from "@/components/dashboard/lemonsqueezy-checkout";
+import { getCheckoutUrl } from "@/lib/lemonsqueezy";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -13,6 +13,8 @@ export default async function SettingsPage() {
     .select("*")
     .eq("id", user!.id)
     .single();
+
+  const checkoutUrl = getCheckoutUrl(user?.email || "", user!.id);
 
   return (
     <div>
@@ -52,13 +54,7 @@ export default async function SettingsPage() {
                 </p>
               </div>
               {profile?.plan !== "pro" && (
-                <PaddleCheckoutButton
-                  userEmail={user?.email || ""}
-                  userId={user!.id}
-                  priceId={getPaddlePriceId()}
-                  environment={getPaddleEnvironment()}
-                  clientToken={process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN || ""}
-                />
+                <LemonSqueezyCheckoutButton checkoutUrl={checkoutUrl} />
               )}
             </div>
           </CardContent>

@@ -4,8 +4,8 @@ export interface Profile {
   full_name: string | null;
   avatar_url: string | null;
   plan: 'free' | 'pro';
-  paddle_customer_id: string | null;
-  paddle_subscription_id: string | null;
+  lemon_customer_id: string | null;
+  lemon_subscription_id: string | null;
   testimonial_count: number;
   created_at: string;
 }

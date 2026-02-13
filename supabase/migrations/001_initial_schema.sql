@@ -5,8 +5,8 @@ create table public.profiles (
   full_name text,
   avatar_url text,
   plan text default 'free' check (plan in ('free', 'pro')),
-  paddle_customer_id text,
-  paddle_subscription_id text,
+  lemon_customer_id text,
+  lemon_subscription_id text,
   testimonial_count int default 0,
   created_at timestamptz default now()
 );

@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  let isLoggedIn = false;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isLoggedIn = !!user;
+  } catch {
+    // ignore
+  }
+
   return (
     <div className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
@@ -37,10 +47,10 @@ export default function PricingPage() {
               ))}
             </ul>
             <Link
-              href="/signup"
+              href={isLoggedIn ? "/dashboard" : "/signup"}
               className="block w-full text-center border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition-colors"
             >
-              Get Started Free
+              {isLoggedIn ? "Go to Dashboard" : "Get Started Free"}
             </Link>
           </div>
 
@@ -74,10 +84,10 @@ export default function PricingPage() {
               ))}
             </ul>
             <Link
-              href="/signup?plan=pro"
+              href={isLoggedIn ? "/settings" : "/signup?plan=pro"}
               className="block w-full text-center bg-indigo-600 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
             >
-              Start Pro Trial
+              {isLoggedIn ? "Upgrade Now" : "Start Pro Trial"}
             </Link>
           </div>
         </div>

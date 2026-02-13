@@ -9,8 +9,18 @@ import {
   Check,
   ArrowRight,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  let isLoggedIn = false;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isLoggedIn = !!user;
+  } catch {
+    // ignore
+  }
+
   return (
     <div>
       {/* Hero */}
@@ -30,12 +40,21 @@ export default function LandingPage() {
             authentic social proof.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/signup"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-indigo-700 transition-colors"
-            >
-              Start Free <ArrowRight className="size-5" />
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-indigo-700 transition-colors"
+              >
+                Go to Dashboard <ArrowRight className="size-5" />
+              </Link>
+            ) : (
+              <Link
+                href="/signup"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-indigo-700 transition-colors"
+              >
+                Start Free <ArrowRight className="size-5" />
+              </Link>
+            )}
             <Link
               href="#features"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-8 py-3 rounded-lg text-lg font-medium hover:bg-gray-50 transition-colors"
@@ -221,10 +240,10 @@ export default function LandingPage() {
             Join hundreds of businesses using TestiSpark to boost conversions with social proof.
           </p>
           <Link
-            href="/signup"
+            href={isLoggedIn ? "/dashboard" : "/signup"}
             className="inline-flex items-center gap-2 bg-indigo-600 text-white px-8 py-3 rounded-lg text-lg font-medium hover:bg-indigo-700 transition-colors"
           >
-            Get Started Free <ArrowRight className="size-5" />
+            {isLoggedIn ? "Go to Dashboard" : "Get Started Free"} <ArrowRight className="size-5" />
           </Link>
         </div>
       </section>

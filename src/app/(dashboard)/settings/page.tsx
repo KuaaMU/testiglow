@@ -19,13 +19,19 @@ export default async function SettingsPage() {
   const checkoutUrl = getCheckoutUrl(user?.email || "", user!.id);
   const usdtWallet = process.env.USDT_WALLET_ADDRESS || "";
 
-  // Check if user has a pending crypto payment
-  const { data: pendingPayment } = await supabase
-    .from("crypto_payments")
-    .select("id, status")
-    .eq("user_id", user!.id)
-    .eq("status", "pending")
-    .maybeSingle();
+  // Check if user has a pending crypto payment (table may not exist yet)
+  let pendingPayment = null;
+  try {
+    const { data } = await supabase
+      .from("crypto_payments")
+      .select("id, status")
+      .eq("user_id", user!.id)
+      .eq("status", "pending")
+      .maybeSingle();
+    pendingPayment = data;
+  } catch {
+    // table may not exist - ignore
+  }
 
   return (
     <div>

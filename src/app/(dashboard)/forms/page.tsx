@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation';
 import {
   Plus,
   FileText,
-  Copy,
   ExternalLink,
   Calendar,
   MessageSquare,
@@ -20,6 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { CopyUrlButton } from '@/components/dashboard/copy-url-button';
 import type { Form } from '@/types';
 
 async function getForms(): Promise<(Form & { testimonial_count: number })[]> {
@@ -50,25 +50,6 @@ async function getForms(): Promise<(Form & { testimonial_count: number })[]> {
   })) as (Form & { testimonial_count: number })[];
 }
 
-function CopyUrlButton({ slug }: { slug: string }) {
-  const url = `${process.env.NEXT_PUBLIC_APP_URL || ''}/collect/${slug}`;
-  return (
-    <form>
-      <input type="hidden" name="url" value={url} />
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        type="button"
-        title="Copy collection URL"
-        onClick={undefined}
-        data-copy-url={url}
-      >
-        <Copy className="size-3.5" />
-      </Button>
-    </form>
-  );
-}
-
 function FormatDate({ date }: { date: string }) {
   return (
     <time dateTime={date}>
@@ -83,6 +64,7 @@ function FormatDate({ date }: { date: string }) {
 
 export default async function FormsPage() {
   const forms = await getForms();
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
 
   return (
     <div className="space-y-8">
@@ -176,7 +158,7 @@ export default async function FormsPage() {
                     Preview
                   </Link>
                 </Button>
-                <CopyUrlButton slug={form.slug} />
+                <CopyUrlButton url={`${baseUrl}/collect/${form.slug}`} />
               </CardFooter>
             </Card>
           ))}

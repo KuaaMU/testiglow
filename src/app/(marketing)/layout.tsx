@@ -1,11 +1,23 @@
 import Link from "next/link";
 import { MessageSquareHeart } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
 
-export default function MarketingLayout({
+export const dynamic = "force-dynamic";
+
+export default async function MarketingLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  let isLoggedIn = false;
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    isLoggedIn = !!user;
+  } catch {
+    // ignore - treat as logged out
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
@@ -19,18 +31,29 @@ export default function MarketingLayout({
             <Link href="/pricing" className="hover:text-gray-900">Pricing</Link>
           </nav>
           <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              Get Started Free
-            </Link>
+            {isLoggedIn ? (
+              <Link
+                href="/dashboard"
+                className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm text-gray-600 hover:text-gray-900"
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
+                >
+                  Get Started Free
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>

@@ -272,7 +272,25 @@ export default function NewWidgetPage() {
                   first.
                 </p>
               ) : (
-                <div className="max-h-80 space-y-2 overflow-y-auto">
+                <div className="space-y-2">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed p-3 transition-colors hover:bg-accent/50">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.size === approvedTestimonials.length && approvedTestimonials.length > 0}
+                      onChange={() => {
+                        if (selectedIds.size === approvedTestimonials.length) {
+                          setSelectedIds(new Set());
+                        } else {
+                          setSelectedIds(new Set(approvedTestimonials.map((t) => t.id)));
+                        }
+                      }}
+                      className="size-4 rounded border-input accent-primary"
+                    />
+                    <span className="text-sm font-medium">
+                      {selectedIds.size === approvedTestimonials.length ? 'Deselect All' : 'Select All'}
+                    </span>
+                  </label>
+                  <div className="max-h-80 space-y-2 overflow-y-auto">
                   {approvedTestimonials.map((t) => (
                     <label
                       key={t.id}
@@ -298,6 +316,7 @@ export default function NewWidgetPage() {
                       )}
                     </label>
                   ))}
+                </div>
                 </div>
               )}
             </CardContent>

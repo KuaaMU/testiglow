@@ -47,15 +47,13 @@ export async function POST(request: NextRequest) {
     );
 
     // Update the testimonial with AI results
-    const { data: updated, error: updateError } = await supabase
+    const { error: updateError } = await supabase
       .from('testimonials')
       .update({
         ai_summary: summary,
         ai_tags: tags,
       })
-      .eq('id', testimonial_id)
-      .select()
-      .single();
+      .eq('id', testimonial_id);
 
     if (updateError) {
       console.error('Error updating testimonial with AI summary:', updateError);
@@ -65,7 +63,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(updated);
+    return NextResponse.json({ summary, tags });
   } catch (err) {
     console.error('POST /api/ai/summarize error:', err);
     return NextResponse.json(

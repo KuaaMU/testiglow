@@ -3,12 +3,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import type { Testimonial } from '@/types';
+import type { Form, Testimonial } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -55,6 +62,10 @@ export default function TestimonialsPage() {
   const [shareTarget, setShareTarget] = useState<Testimonial | null>(null);
   const [plan, setPlan] = useState<'free' | 'pro'>('free');
 
+  // Form filter state
+  const [forms, setForms] = useState<Form[]>([]);
+  const [formFilter, setFormFilter] = useState<string>('all');
+
   const fetchTestimonials = useCallback(
     async (pageNum: number, append = false) => {
       if (pageNum === 0) setLoading(true);
@@ -76,6 +87,10 @@ export default function TestimonialsPage() {
 
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter);
+      }
+
+      if (formFilter !== 'all') {
+        query = query.eq('form_id', formFilter);
       }
 
       if (search.trim()) {
@@ -101,24 +116,28 @@ export default function TestimonialsPage() {
       setLoading(false);
       setLoadingMore(false);
     },
-    [supabase, statusFilter, search]
+    [supabase, statusFilter, formFilter, search]
   );
 
-  // Fetch user plan on mount
+  // Fetch user plan and forms on mount
   useEffect(() => {
-    async function fetchPlan() {
+    async function fetchMeta() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('plan')
-        .eq('id', user.id)
-        .single();
-      if (profile) {
-        setPlan(profile.plan as 'free' | 'pro');
+
+      const [profileRes, formsRes] = await Promise.all([
+        supabase.from('profiles').select('plan').eq('id', user.id).single(),
+        supabase.from('forms').select('id, name').eq('user_id', user.id).order('name'),
+      ]);
+
+      if (profileRes.data) {
+        setPlan(profileRes.data.plan as 'free' | 'pro');
+      }
+      if (formsRes.data) {
+        setForms(formsRes.data as Form[]);
       }
     }
-    fetchPlan();
+    fetchMeta();
   }, [supabase]);
 
   useEffect(() => {
@@ -202,6 +221,11 @@ export default function TestimonialsPage() {
     setActionLoading((prev) => ({ ...prev, [`ai-${id}`]: false }));
   };
 
+  const getFormName = (formId: string) => {
+    const f = forms.find((form) => form.id === formId);
+    return f?.name || '';
+  };
+
   const statusBadge = (status: Testimonial['status']) => {
     const map: Record<string, { label: string; className: string }> = {
       pending: {
@@ -255,6 +279,7 @@ export default function TestimonialsPage() {
     const initial = t.author_name?.charAt(0)?.toUpperCase() || '?';
     const isLoading = actionLoading[t.id] || false;
     const displaySummary = summaries[t.id] || t.ai_summary;
+    const formName = getFormName(t.form_id);
 
     return (
       <Card key={t.id} className="relative">
@@ -292,6 +317,13 @@ export default function TestimonialsPage() {
               {statusBadge(t.status)}
             </div>
           </div>
+
+          {/* Form badge */}
+          {formName && formFilter === 'all' && (
+            <Badge variant="secondary" className="text-xs">
+              {formName}
+            </Badge>
+          )}
 
           {/* Rating */}
           {renderStars(t.rating)}
@@ -435,7 +467,11 @@ export default function TestimonialsPage() {
               variant="outline"
               className="gap-1.5"
               onClick={async () => {
-                const res = await fetch('/api/testimonials/export');
+                const params = new URLSearchParams();
+                if (formFilter !== 'all') params.set('form_id', formFilter);
+                if (statusFilter !== 'all') params.set('status', statusFilter);
+                const qs = params.toString();
+                const res = await fetch(`/api/testimonials/export${qs ? `?${qs}` : ''}`);
                 if (res.ok) {
                   const blob = await res.blob();
                   const url = URL.createObjectURL(blob);
@@ -454,15 +490,32 @@ export default function TestimonialsPage() {
         </div>
       </div>
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search by content or author..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
-        />
+      {/* Filters row: Search + Form filter */}
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="relative max-w-md flex-1">
+          <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by content or author..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        {forms.length > 1 && (
+          <Select value={formFilter} onValueChange={setFormFilter}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="All Forms" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Forms</SelectItem>
+              {forms.map((f) => (
+                <SelectItem key={f.id} value={f.id}>
+                  {f.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Tabs */}

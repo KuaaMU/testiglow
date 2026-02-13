@@ -8,7 +8,9 @@ export async function generateTestimonialSummary(content: string): Promise<{
   const baseUrl = process.env.AI_BASE_URL || 'https://api.anthropic.com';
 
   if (!apiKey) {
-    throw new Error('AI_API_KEY is not set');
+    // Fallback: extract first sentence as summary when no API key configured
+    const firstSentence = content.match(/^[^.!?]*[.!?]/)?.[0] || content.slice(0, 150);
+    return { summary: firstSentence.trim(), tags: [] };
   }
 
   const response = await fetch(`${baseUrl}/v1/messages`, {

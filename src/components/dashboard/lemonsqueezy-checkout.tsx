@@ -47,7 +47,7 @@ export function LemonSqueezyCheckoutButton({
       onClick={handleClick}
       className="bg-indigo-600 hover:bg-indigo-700"
     >
-      Upgrade to Pro — $19/mo
+      Upgrade to Pro — $9.9/mo
     </Button>
   );
 }

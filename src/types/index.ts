@@ -74,4 +74,4 @@ export interface WidgetConfig {
 }
 
 export const FREE_TESTIMONIAL_LIMIT = 15;
-export const PRO_PRICE_MONTHLY = 19;
+export const PRO_PRICE_MONTHLY = 9.9;

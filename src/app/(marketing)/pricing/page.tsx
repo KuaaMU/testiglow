@@ -62,7 +62,7 @@ export default async function PricingPage() {
             <h3 className="font-semibold text-lg text-gray-900 mb-1">Pro</h3>
             <p className="text-sm text-gray-500 mb-4">For growing businesses</p>
             <div className="mb-6">
-              <span className="text-4xl font-bold text-gray-900">$19</span>
+              <span className="text-4xl font-bold text-gray-900">$9.9</span>
               <span className="text-gray-500">/month</span>
             </div>
             <ul className="space-y-3 mb-8">

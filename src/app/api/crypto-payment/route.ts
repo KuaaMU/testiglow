@@ -44,7 +44,7 @@ export async function POST(request: Request) {
       user_id: user.id,
       tx_hash,
       chain: chain || 'TRC-20',
-      amount: amount || 19,
+      amount: amount || 9.9,
       currency: 'USDT',
       wallet_address,
       status: 'pending',

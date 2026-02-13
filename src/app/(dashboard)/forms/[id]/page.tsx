@@ -47,8 +47,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import type { Form } from '@/types';
+import type { Form, Question } from '@/types';
 import { EmailTemplateGenerator } from '@/components/dashboard/email-template-generator';
+import { QuestionsEditor } from '@/components/dashboard/questions-editor';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -81,6 +82,7 @@ export default function EditFormPage() {
   const [slugError, setSlugError] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [formData, setFormData] = useState<Form | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -119,6 +121,7 @@ export default function EditFormPage() {
 
     setFormData(data as Form);
     setIsActive(data.is_active);
+    setQuestions(data.questions || []);
     form.reset({
       name: data.name,
       slug: data.slug,
@@ -201,6 +204,7 @@ export default function EditFormPage() {
           headline: values.headline || null,
           description: values.description || null,
           brand_color: values.brand_color,
+          questions: questions,
           thank_you_message:
             values.thank_you_message ||
             'Thank you for your testimonial! We truly appreciate your feedback.',
@@ -483,6 +487,22 @@ export default function EditFormPage() {
               </div>
             </form>
           </FormComponent>
+        </CardContent>
+      </Card>
+
+      {/* Custom Questions Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Collection Questions</CardTitle>
+          <CardDescription>
+            Customize the questions shown on your testimonial collection form.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <QuestionsEditor questions={questions} onChange={setQuestions} />
+          <p className="mt-3 text-xs text-muted-foreground">
+            Changes are saved when you click &quot;Save Changes&quot; above.
+          </p>
         </CardContent>
       </Card>
 

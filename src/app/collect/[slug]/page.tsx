@@ -70,6 +70,8 @@ export default function CollectPage() {
   const [authorCompany, setAuthorCompany] = useState('');
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>({});
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -127,6 +129,7 @@ export default function CollectPage() {
           author_company: authorCompany.trim() || null,
           rating: rating || null,
           content: content.trim(),
+          video_url: videoUrl.trim() || null,
         }),
       });
 
@@ -373,6 +376,87 @@ export default function CollectPage() {
                   e.target.style.borderColor = '';
                 }}
               />
+            </div>
+
+            {/* Custom Questions */}
+            {formData.questions && formData.questions.length > 0 && formData.questions.some((q) => q.text) && (
+              <>
+                {formData.questions
+                  .filter((q) => q.text.trim())
+                  .map((q) => (
+                    <div key={q.id}>
+                      <label
+                        htmlFor={`q-${q.id}`}
+                        className="mb-1.5 block text-sm font-medium text-gray-700"
+                      >
+                        {q.text}
+                        {q.required && <span className="text-red-500"> *</span>}
+                      </label>
+                      {q.type === 'rating' ? (
+                        <StarRating
+                          value={Number(customAnswers[q.id] || 0)}
+                          onChange={(v) =>
+                            setCustomAnswers((prev) => ({ ...prev, [q.id]: String(v) }))
+                          }
+                          brandColor={brandColor}
+                        />
+                      ) : (
+                        <textarea
+                          id={`q-${q.id}`}
+                          rows={2}
+                          required={q.required}
+                          value={customAnswers[q.id] || ''}
+                          onChange={(e) =>
+                            setCustomAnswers((prev) => ({
+                              ...prev,
+                              [q.id]: e.target.value,
+                            }))
+                          }
+                          placeholder="Your answer..."
+                          className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition-shadow placeholder:text-gray-400"
+                          onFocus={(e) => {
+                            e.target.style.boxShadow = `0 0 0 2px ${brandColor}`;
+                            e.target.style.borderColor = 'transparent';
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.boxShadow = '';
+                            e.target.style.borderColor = '';
+                          }}
+                        />
+                      )}
+                    </div>
+                  ))}
+              </>
+            )}
+
+            {/* Video URL */}
+            <div>
+              <label
+                htmlFor="video_url"
+                className="mb-1.5 block text-sm font-medium text-gray-700"
+              >
+                Video Testimonial URL{' '}
+                <span className="text-xs font-normal text-gray-400">(optional)</span>
+              </label>
+              <input
+                id="video_url"
+                type="url"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                placeholder="https://youtube.com/watch?v=... or https://loom.com/..."
+                className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 shadow-sm outline-none transition-shadow placeholder:text-gray-400"
+                onFocus={(e) => {
+                  e.target.style.boxShadow = `0 0 0 2px ${brandColor}`;
+                  e.target.style.borderColor = 'transparent';
+                }}
+                onBlur={(e) => {
+                  e.target.style.boxShadow = '';
+                  e.target.style.borderColor = '';
+                }}
+              />
+              <p className="mt-1 text-xs text-gray-400">
+                Share a YouTube, Loom, or other video link alongside your written testimonial.
+              </p>
             </div>
 
             {/* Error message */}

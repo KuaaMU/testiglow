@@ -28,6 +28,8 @@ import {
   MessageSquareIcon,
   ImportIcon,
   ShareIcon,
+  DownloadIcon,
+  VideoIcon,
 } from 'lucide-react';
 import { SocialCardDialog } from '@/components/dashboard/social-card-dialog';
 
@@ -301,6 +303,19 @@ export default function TestimonialsPage() {
               : t.content}
           </p>
 
+          {/* Video */}
+          {t.video_url && (
+            <a
+              href={t.video_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
+            >
+              <VideoIcon className="size-3.5" />
+              Video Testimonial
+            </a>
+          )}
+
           {/* AI Summary */}
           {displaySummary && (
             <div className="rounded-md border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950/30">
@@ -408,12 +423,35 @@ export default function TestimonialsPage() {
             Manage and review all your collected testimonials.
           </p>
         </div>
-        <Button asChild variant="outline" className="gap-1.5">
-          <Link href="/testimonials/import">
-            <ImportIcon className="size-4" />
-            Import
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" className="gap-1.5">
+            <Link href="/testimonials/import">
+              <ImportIcon className="size-4" />
+              Import
+            </Link>
+          </Button>
+          {plan === 'pro' && (
+            <Button
+              variant="outline"
+              className="gap-1.5"
+              onClick={async () => {
+                const res = await fetch('/api/testimonials/export');
+                if (res.ok) {
+                  const blob = await res.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `testimonials-${new Date().toISOString().slice(0, 10)}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }
+              }}
+            >
+              <DownloadIcon className="size-4" />
+              Export CSV
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Search */}

@@ -8,7 +8,7 @@ import { FREE_TESTIMONIAL_LIMIT } from '@/types';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { form_id, author_name, author_email, author_title, author_company, rating, content } =
+    const { form_id, author_name, author_email, author_title, author_company, rating, content, video_url } =
       body;
 
     // Validate required fields
@@ -96,6 +96,7 @@ export async function POST(request: NextRequest) {
         author_company: author_company || null,
         rating: rating || null,
         content: content.trim(),
+        video_url: video_url || null,
         status: 'pending',
       })
       .select()

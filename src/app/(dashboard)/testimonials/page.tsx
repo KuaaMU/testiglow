@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import type { Testimonial } from '@/types';
 import { Input } from '@/components/ui/input';
@@ -25,7 +26,10 @@ import {
   SearchIcon,
   Loader2Icon,
   MessageSquareIcon,
+  ImportIcon,
+  ShareIcon,
 } from 'lucide-react';
+import { SocialCardDialog } from '@/components/dashboard/social-card-dialog';
 
 const PAGE_SIZE = 12;
 
@@ -44,6 +48,10 @@ export default function TestimonialsPage() {
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
   const [summaries, setSummaries] = useState<Record<string, string>>({});
   const [deleteTarget, setDeleteTarget] = useState<Testimonial | null>(null);
+
+  // Social card state
+  const [shareTarget, setShareTarget] = useState<Testimonial | null>(null);
+  const [plan, setPlan] = useState<'free' | 'pro'>('free');
 
   const fetchTestimonials = useCallback(
     async (pageNum: number, append = false) => {
@@ -93,6 +101,23 @@ export default function TestimonialsPage() {
     },
     [supabase, statusFilter, search]
   );
+
+  // Fetch user plan on mount
+  useEffect(() => {
+    async function fetchPlan() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .single();
+      if (profile) {
+        setPlan(profile.plan as 'free' | 'pro');
+      }
+    }
+    fetchPlan();
+  }, [supabase]);
 
   useEffect(() => {
     setPage(0);
@@ -351,6 +376,15 @@ export default function TestimonialsPage() {
             <Button
               size="sm"
               variant="outline"
+              onClick={() => setShareTarget(t)}
+              className="gap-1.5"
+            >
+              <ShareIcon className="size-3.5" />
+              Share
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
               onClick={() => setDeleteTarget(t)}
               disabled={!!actionLoading[`del-${t.id}`]}
               className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700"
@@ -367,11 +401,19 @@ export default function TestimonialsPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-6 p-4 md:p-8">
       {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Testimonials</h1>
-        <p className="text-muted-foreground">
-          Manage and review all your collected testimonials.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Testimonials</h1>
+          <p className="text-muted-foreground">
+            Manage and review all your collected testimonials.
+          </p>
+        </div>
+        <Button asChild variant="outline" className="gap-1.5">
+          <Link href="/testimonials/import">
+            <ImportIcon className="size-4" />
+            Import
+          </Link>
+        </Button>
       </div>
 
       {/* Search */}
@@ -473,6 +515,16 @@ export default function TestimonialsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Social Card Dialog */}
+      {shareTarget && (
+        <SocialCardDialog
+          testimonial={shareTarget}
+          plan={plan}
+          open={!!shareTarget}
+          onOpenChange={(open) => !open && setShareTarget(null)}
+        />
+      )}
     </div>
   );
 }

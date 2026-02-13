@@ -48,6 +48,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import type { Form } from '@/types';
+import { EmailTemplateGenerator } from '@/components/dashboard/email-template-generator';
 
 const formSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
@@ -482,6 +483,22 @@ export default function EditFormPage() {
               </div>
             </form>
           </FormComponent>
+        </CardContent>
+      </Card>
+
+      {/* Request via Email Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Request via Email</CardTitle>
+          <CardDescription>
+            Copy a pre-written email template to send to your customers requesting testimonials.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <EmailTemplateGenerator
+            formName={formData?.name || 'your product'}
+            collectionUrl={collectionUrl}
+          />
         </CardContent>
       </Card>
 

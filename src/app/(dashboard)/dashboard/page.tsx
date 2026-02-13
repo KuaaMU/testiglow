@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { MessageSquare, FileText, Code2, Clock, Plus } from "lucide-react";
+import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -35,6 +36,11 @@ export default async function DashboardPage() {
     .from("widgets")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user!.id);
+
+  // Show onboarding wizard for new users with no forms
+  if ((formsCount ?? 0) === 0 && !profile?.onboarding_completed) {
+    return <OnboardingWizard userId={user!.id} />;
+  }
 
   const stats = [
     { label: "Total Testimonials", value: totalTestimonials || 0, icon: MessageSquare },

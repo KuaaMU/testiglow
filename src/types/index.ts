@@ -7,6 +7,7 @@ export interface Profile {
   lemon_customer_id: string | null;
   lemon_subscription_id: string | null;
   testimonial_count: number;
+  onboarding_completed: boolean;
   created_at: string;
 }
 

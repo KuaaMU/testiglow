@@ -96,8 +96,8 @@ export function DashboardShell({
               </Badge>
             </div>
           </div>
-          <LanguageToggle />
-          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500" onClick={handleLogout}>
+          <LanguageToggle variant="outline" />
+          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500 mt-2" onClick={handleLogout}>
             <LogOut className="size-4 mr-2" />
             {t.nav.log_out}
           </Button>
@@ -149,8 +149,8 @@ function MobileNav({ pathname, onLogout, t }: { pathname: string; onLogout: () =
         </SheetTitle>
         <NavLinks pathname={pathname} t={t} />
         <div className="mt-8 pt-4 border-t">
-          <LanguageToggle />
-          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500" onClick={onLogout}>
+          <LanguageToggle variant="outline" />
+          <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500 mt-2" onClick={onLogout}>
             <LogOut className="size-4 mr-2" />
             {t.nav.log_out}
           </Button>

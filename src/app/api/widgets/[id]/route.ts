@@ -1,33 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 
-export async function GET() {
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { data: widgets, error } = await supabase
+  const { data: widget, error } = await supabase
     .from('widgets')
     .select('*')
+    .eq('id', id)
     .eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+    .single();
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error || !widget) {
+    return NextResponse.json({ error: 'Widget not found' }, { status: 404 });
   }
 
-  return NextResponse.json({ widgets });
+  return NextResponse.json({ widget });
 }
 
-export async function POST(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Verify ownership
+  const { data: existing } = await supabase
+    .from('widgets')
+    .select('id')
+    .eq('id', id)
+    .eq('user_id', user.id)
+    .single();
+
+  if (!existing) {
+    return NextResponse.json({ error: 'Widget not found' }, { status: 404 });
   }
 
   let body: Record<string, unknown>;
@@ -44,7 +69,6 @@ export async function POST(request: NextRequest) {
     testimonial_ids?: string[];
   };
 
-  // Validation
   if (!name || typeof name !== 'string' || !name.trim()) {
     return NextResponse.json({ error: 'Name is required' }, { status: 400 });
   }
@@ -61,27 +85,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Config is required' }, { status: 400 });
   }
 
-  // Validate config fields
   const validThemes = ['light', 'dark'];
   if (!config.theme || !validThemes.includes(config.theme as string)) {
     return NextResponse.json(
       { error: 'Config theme must be light or dark' },
-      { status: 400 }
-    );
-  }
-
-  const cols = Number(config.columns);
-  if (isNaN(cols) || cols < 1 || cols > 4) {
-    return NextResponse.json(
-      { error: 'Config columns must be between 1 and 4' },
-      { status: 400 }
-    );
-  }
-
-  const maxItems = Number(config.max_items);
-  if (isNaN(maxItems) || maxItems < 3 || maxItems > 24) {
-    return NextResponse.json(
-      { error: 'Config max_items must be between 3 and 24' },
       { status: 400 }
     );
   }
@@ -93,11 +100,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Insert
+  const cols = Number(config.columns) || 3;
+  const maxItems = Number(config.max_items) || 6;
+
   const { data: widget, error } = await supabase
     .from('widgets')
-    .insert({
-      user_id: user.id,
+    .update({
       name: name.trim(),
       type,
       config: {
@@ -117,6 +125,7 @@ export async function POST(request: NextRequest) {
       },
       testimonial_ids,
     })
+    .eq('id', id)
     .select()
     .single();
 
@@ -124,5 +133,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ widget }, { status: 201 });
+  return NextResponse.json({ widget });
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { error } = await supabase
+    .from('widgets')
+    .delete()
+    .eq('id', id)
+    .eq('user_id', user.id);
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }

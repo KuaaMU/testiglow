@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import type { Testimonial, WidgetConfig } from '@/types';
+import type { Testimonial, Widget, WidgetConfig } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2Icon, StarIcon, SaveIcon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Loader2Icon, StarIcon, SaveIcon, Trash2Icon, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import {
   WidgetPreview,
@@ -27,9 +37,13 @@ import {
   type PreviewOptions,
 } from '@/components/dashboard/widget-preview';
 
-export default function NewWidgetPage() {
+export default function EditWidgetPage() {
   const supabase = createClient();
   const router = useRouter();
+  const params = useParams();
+  const widgetId = params.id as string;
+
+  const [loading, setLoading] = useState(true);
 
   // Form state
   const [name, setName] = useState('');
@@ -49,12 +63,48 @@ export default function NewWidgetPage() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loadingTestimonials, setLoadingTestimonials] = useState(true);
 
-  // Saving state
+  // Saving / deleting state
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  // Load widget data
+  useEffect(() => {
+    async function loadWidget() {
+      try {
+        const res = await fetch(`/api/widgets/${widgetId}`);
+        if (!res.ok) {
+          router.push('/widgets');
+          return;
+        }
+        const { widget } = (await res.json()) as { widget: Widget };
+
+        setName(widget.name);
+        setWidgetType(widget.type);
+        setTheme(widget.config.theme);
+        setColumns(widget.config.columns);
+        setMaxItems(widget.config.max_items);
+        setShowRating(widget.config.show_rating);
+        setShowAvatar(widget.config.show_avatar);
+        setShowDate(widget.config.show_date);
+        setCardStyle(widget.config.card_style || 'bordered');
+        setAccentColor(widget.config.accent_color || '#6366f1');
+        setFontSize(widget.config.font_size || 'base');
+        setSelectedIds(new Set(widget.testimonial_ids || []));
+      } catch {
+        router.push('/widgets');
+      }
+      setLoading(false);
+    }
+    loadWidget();
+  }, [widgetId, router]);
+
+  // Load approved testimonials
   const fetchApproved = useCallback(async () => {
     setLoadingTestimonials(true);
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) {
       setLoadingTestimonials(false);
       return;
@@ -103,8 +153,8 @@ export default function NewWidgetPage() {
     };
 
     try {
-      const res = await fetch('/api/widgets', {
-        method: 'POST',
+      const res = await fetch(`/api/widgets/${widgetId}`, {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
@@ -115,18 +165,34 @@ export default function NewWidgetPage() {
       });
 
       if (res.ok) {
-        toast.success('Widget created.');
+        toast.success('Widget updated.');
         router.push('/widgets');
       } else {
         const err = await res.json();
-        toast.error(err.error || 'Failed to create widget.');
+        toast.error(err.error || 'Failed to update widget.');
       }
     } catch (err) {
-      console.error('Failed to create widget:', err);
-      toast.error('Failed to create widget.');
+      console.error('Failed to update widget:', err);
+      toast.error('Failed to update widget.');
     }
 
     setSaving(false);
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/widgets/${widgetId}`, { method: 'DELETE' });
+      if (res.ok) {
+        toast.success('Widget deleted.');
+        router.push('/widgets');
+      } else {
+        toast.error('Failed to delete widget.');
+      }
+    } catch {
+      toast.error('Failed to delete widget.');
+    }
+    setDeleting(false);
   };
 
   // Selected testimonials for preview
@@ -144,14 +210,29 @@ export default function NewWidgetPage() {
     fontSize,
   };
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-8">
       {/* Page header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Create Widget</h1>
-        <p className="text-muted-foreground">
-          Configure how your testimonials will appear on your website.
-        </p>
+      <div className="flex items-center gap-4">
+        <Button variant="ghost" size="icon" asChild>
+          <Link href="/widgets">
+            <ArrowLeft className="size-4" />
+          </Link>
+        </Button>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Edit Widget</h1>
+          <p className="text-muted-foreground">
+            Update your widget configuration and selected testimonials.
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
@@ -350,26 +431,32 @@ export default function NewWidgetPage() {
                 </div>
               ) : approvedTestimonials.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
-                  No approved testimonials available. Approve some testimonials
-                  first.
+                  No approved testimonials available.
                 </p>
               ) : (
                 <div className="space-y-2">
                   <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-dashed p-3 transition-colors hover:bg-accent/50">
                     <input
                       type="checkbox"
-                      checked={selectedIds.size === approvedTestimonials.length && approvedTestimonials.length > 0}
+                      checked={
+                        selectedIds.size === approvedTestimonials.length &&
+                        approvedTestimonials.length > 0
+                      }
                       onChange={() => {
                         if (selectedIds.size === approvedTestimonials.length) {
                           setSelectedIds(new Set());
                         } else {
-                          setSelectedIds(new Set(approvedTestimonials.map((t) => t.id)));
+                          setSelectedIds(
+                            new Set(approvedTestimonials.map((t) => t.id))
+                          );
                         }
                       }}
                       className="size-4 rounded border-input accent-primary"
                     />
                     <span className="text-sm font-medium">
-                      {selectedIds.size === approvedTestimonials.length ? 'Deselect All' : 'Select All'}
+                      {selectedIds.size === approvedTestimonials.length
+                        ? 'Deselect All'
+                        : 'Select All'}
                     </span>
                   </label>
                   <div className="max-h-80 space-y-2 overflow-y-auto">
@@ -404,25 +491,65 @@ export default function NewWidgetPage() {
             </CardContent>
           </Card>
 
-          {/* Save button */}
-          <Button
-            onClick={handleSave}
-            disabled={saving || !name.trim()}
-            className="w-full"
-            size="lg"
-          >
-            {saving ? (
-              <>
-                <Loader2Icon className="size-4 animate-spin" />
-                Creating Widget...
-              </>
-            ) : (
-              <>
-                <SaveIcon className="size-4" />
-                Create Widget
-              </>
-            )}
-          </Button>
+          {/* Save & Delete buttons */}
+          <div className="flex gap-3">
+            <Button
+              onClick={handleSave}
+              disabled={saving || !name.trim()}
+              className="flex-1"
+              size="lg"
+            >
+              {saving ? (
+                <>
+                  <Loader2Icon className="size-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <SaveIcon className="size-4" />
+                  Save Changes
+                </>
+              )}
+            </Button>
+            <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="destructive" size="lg">
+                  <Trash2Icon className="size-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Delete Widget</DialogTitle>
+                  <DialogDescription>
+                    Are you sure you want to delete &quot;{name}&quot;? This action
+                    cannot be undone.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={() => setDeleteDialogOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDelete}
+                    disabled={deleting}
+                  >
+                    {deleting ? (
+                      <>
+                        <Loader2Icon className="size-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      'Delete'
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {/* Right: Live Preview */}

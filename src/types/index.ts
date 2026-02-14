@@ -56,7 +56,7 @@ export interface Widget {
   id: string;
   user_id: string;
   name: string;
-  type: 'wall' | 'carousel' | 'badge';
+  type: 'wall' | 'carousel' | 'badge' | 'slider' | 'marquee' | 'list';
   config: WidgetConfig;
   testimonial_ids: string[] | null;
   created_at: string;
@@ -71,6 +71,9 @@ export interface WidgetConfig {
   show_date: boolean;
   border_radius: number;
   background_color: string;
+  card_style?: 'bordered' | 'shadow' | 'flat' | 'glass';
+  accent_color?: string;
+  font_size?: 'sm' | 'base' | 'lg';
 }
 
 export const FREE_TESTIMONIAL_LIMIT = 15;

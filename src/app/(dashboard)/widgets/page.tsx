@@ -5,19 +5,25 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { PlusIcon, LayoutGridIcon, GalleryHorizontalIcon, AwardIcon } from 'lucide-react';
+import { PlusIcon, LayoutGridIcon, GalleryHorizontalIcon, AwardIcon, SlidersHorizontalIcon, ArrowRightLeftIcon, ListIcon } from 'lucide-react';
 import { CopyEmbedCodeButton } from './copy-embed-button';
 
 const widgetTypeIcons: Record<Widget['type'], React.ReactNode> = {
   wall: <LayoutGridIcon className="size-5" />,
   carousel: <GalleryHorizontalIcon className="size-5" />,
   badge: <AwardIcon className="size-5" />,
+  slider: <SlidersHorizontalIcon className="size-5" />,
+  marquee: <ArrowRightLeftIcon className="size-5" />,
+  list: <ListIcon className="size-5" />,
 };
 
 const widgetTypeLabels: Record<Widget['type'], string> = {
   wall: 'Wall of Love',
   carousel: 'Carousel',
   badge: 'Badge',
+  slider: 'Slider',
+  marquee: 'Marquee',
+  list: 'List',
 };
 
 export default async function WidgetsPage() {

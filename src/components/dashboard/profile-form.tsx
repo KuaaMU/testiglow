@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import { useT } from '@/lib/i18n/context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +18,7 @@ interface ProfileFormProps {
 export function ProfileForm({ userId, initialName }: ProfileFormProps) {
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
+  const t = useT();
 
   async function handleSave() {
     if (!name.trim()) return;
@@ -29,9 +31,9 @@ export function ProfileForm({ userId, initialName }: ProfileFormProps) {
       .eq('id', userId);
 
     if (error) {
-      toast.error('Failed to update name.');
+      toast.error(t.settings.profile_failed);
     } else {
-      toast.success('Profile updated.');
+      toast.success(t.settings.profile_updated);
     }
     setSaving(false);
   }
@@ -39,17 +41,17 @@ export function ProfileForm({ userId, initialName }: ProfileFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Account</CardTitle>
+        <CardTitle>{t.settings.account}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="full_name">Name</Label>
+          <Label htmlFor="full_name">{t.settings.name}</Label>
           <div className="flex gap-2">
             <Input
               id="full_name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Your name"
+              placeholder={t.settings.your_name}
             />
             <Button
               onClick={handleSave}

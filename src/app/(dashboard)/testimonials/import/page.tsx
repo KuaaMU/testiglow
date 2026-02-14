@@ -27,6 +27,7 @@ import {
   CheckCircle2,
   ExternalLink,
 } from 'lucide-react';
+import { useT } from '@/lib/i18n/context';
 
 interface ImportRow {
   author_name: string;
@@ -44,6 +45,7 @@ interface TwitterPreview {
 export default function ImportTestimonialsPage() {
   const router = useRouter();
   const supabase = createClient();
+  const t = useT();
 
   const [forms, setForms] = useState<Form[]>([]);
   const [selectedFormId, setSelectedFormId] = useState('');
@@ -225,9 +227,9 @@ export default function ImportTestimonialsPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Import Testimonials</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.testimonials.import_title}</h1>
           <p className="text-muted-foreground">
-            Import existing testimonials manually or from Twitter/X.
+            {t.testimonials.import_desc}
           </p>
         </div>
       </div>
@@ -236,7 +238,7 @@ export default function ImportTestimonialsPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="space-y-2">
-            <Label>Associate with Form</Label>
+            <Label>{t.testimonials.select_form}</Label>
             {forms.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 No forms found. Please{' '}
@@ -248,7 +250,7 @@ export default function ImportTestimonialsPage() {
             ) : (
               <Select value={selectedFormId} onValueChange={setSelectedFormId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a form" />
+                  <SelectValue placeholder={t.testimonials.select_form} />
                 </SelectTrigger>
                 <SelectContent>
                   {forms.map((f) => (
@@ -281,15 +283,15 @@ export default function ImportTestimonialsPage() {
 
       <Tabs defaultValue="manual">
         <TabsList>
-          <TabsTrigger value="manual">Manual Import</TabsTrigger>
-          <TabsTrigger value="twitter">Import from Twitter/X</TabsTrigger>
+          <TabsTrigger value="manual">{t.testimonials.manual_tab}</TabsTrigger>
+          <TabsTrigger value="twitter">{t.testimonials.twitter_tab}</TabsTrigger>
         </TabsList>
 
         {/* Manual Import Tab */}
         <TabsContent value="manual" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Add Testimonials</CardTitle>
+              <CardTitle className="text-base">{t.testimonials.import_title}</CardTitle>
               <CardDescription>
                 Fill in the details for each testimonial you want to import. They
                 will be automatically approved.
@@ -318,7 +320,7 @@ export default function ImportTestimonialsPage() {
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <Label className="text-xs">Author Name *</Label>
+                      <Label className="text-xs">{t.testimonials.author_name} *</Label>
                       <Input
                         placeholder="John Doe"
                         value={row.author_name}
@@ -328,7 +330,7 @@ export default function ImportTestimonialsPage() {
                       />
                     </div>
                     <div>
-                      <Label className="text-xs">Company</Label>
+                      <Label className="text-xs">{t.testimonials.company}</Label>
                       <Input
                         placeholder="Acme Inc."
                         value={row.author_company}
@@ -339,7 +341,7 @@ export default function ImportTestimonialsPage() {
                     </div>
                   </div>
                   <div>
-                    <Label className="text-xs">Content *</Label>
+                    <Label className="text-xs">{t.testimonials.content} *</Label>
                     <Textarea
                       placeholder="Their testimonial content..."
                       value={row.content}
@@ -350,7 +352,7 @@ export default function ImportTestimonialsPage() {
                     />
                   </div>
                   <div className="w-24">
-                    <Label className="text-xs">Rating</Label>
+                    <Label className="text-xs">{t.testimonials.rating}</Label>
                     <Select
                       value={row.rating}
                       onValueChange={(v) => updateRow(index, 'rating', v)}
@@ -372,7 +374,7 @@ export default function ImportTestimonialsPage() {
 
               <Button variant="outline" onClick={addRow} className="w-full gap-1.5">
                 <Plus className="size-4" />
-                Add Another
+                {t.testimonials.add_row}
               </Button>
 
               <div className="flex justify-end pt-2">
@@ -389,9 +391,8 @@ export default function ImportTestimonialsPage() {
                   ) : (
                     <Upload className="size-4" />
                   )}
-                  Import{' '}
-                  {rows.filter((r) => r.author_name.trim() && r.content.trim()).length}{' '}
-                  Testimonial(s)
+                  {t.testimonials.import_btn}{' '}
+                  {rows.filter((r) => r.author_name.trim() && r.content.trim()).length}
                 </Button>
               </div>
             </CardContent>
@@ -402,7 +403,7 @@ export default function ImportTestimonialsPage() {
         <TabsContent value="twitter" className="space-y-4 pt-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Import from Twitter/X</CardTitle>
+              <CardTitle className="text-base">{t.testimonials.twitter_tab}</CardTitle>
               <CardDescription>
                 Paste a tweet URL to import it as a testimonial. Uses the public
                 oEmbed API — no API key required.
@@ -428,7 +429,7 @@ export default function ImportTestimonialsPage() {
                   ) : (
                     <ExternalLink className="size-4" />
                   )}
-                  Fetch
+                  {t.testimonials.fetch_tweet}
                 </Button>
               </div>
 
@@ -438,7 +439,7 @@ export default function ImportTestimonialsPage() {
 
               {twitterPreview && (
                 <div className="space-y-3 rounded-md border p-4">
-                  <p className="text-sm font-medium">Preview</p>
+                  <p className="text-sm font-medium">{t.common.preview}</p>
                   <div className="space-y-1">
                     <p className="text-sm font-medium">{twitterPreview.author_name}</p>
                     <p className="text-sm text-foreground/90">
@@ -455,7 +456,7 @@ export default function ImportTestimonialsPage() {
                     ) : (
                       <CheckCircle2 className="size-4" />
                     )}
-                    Confirm Import
+                    {t.testimonials.confirm_import}
                   </Button>
                 </div>
               )}

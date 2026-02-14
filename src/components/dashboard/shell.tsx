@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { useT } from "@/lib/i18n/context";
+import { LanguageToggle } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
@@ -17,16 +19,17 @@ import {
   Menu,
   MessageSquareHeart,
 } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n/translations";
 
-const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/forms", label: "Forms", icon: FileText },
-  { href: "/testimonials", label: "Testimonials", icon: MessageSquare },
-  { href: "/widgets", label: "Widgets", icon: Code2 },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
+function NavLinks({ pathname, t }: { pathname: string; t: Dictionary }) {
+  const navItems = [
+    { href: "/dashboard", label: t.nav.dashboard, icon: LayoutDashboard },
+    { href: "/forms", label: t.nav.forms, icon: FileText },
+    { href: "/testimonials", label: t.nav.testimonials, icon: MessageSquare },
+    { href: "/widgets", label: t.nav.widgets, icon: Code2 },
+    { href: "/settings", label: t.nav.settings, icon: Settings },
+  ];
 
-function NavLinks({ pathname }: { pathname: string }) {
   return (
     <nav className="space-y-1">
       {navItems.map((item) => {
@@ -61,6 +64,7 @@ export function DashboardShell({
 }) {
   const pathname = usePathname();
   const supabase = createClient();
+  const t = useT();
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -78,7 +82,7 @@ export function DashboardShell({
           </Link>
         </div>
         <div className="flex-1 p-4">
-          <NavLinks pathname={pathname} />
+          <NavLinks pathname={pathname} t={t} />
         </div>
         <div className="p-4 border-t">
           <div className="flex items-center gap-2 mb-3">
@@ -88,13 +92,14 @@ export function DashboardShell({
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
               <Badge variant={plan === "pro" ? "default" : "secondary"} className="text-xs">
-                {plan === "pro" ? "Pro" : "Free"}
+                {plan === "pro" ? t.common.pro : t.common.free}
               </Badge>
             </div>
           </div>
+          <LanguageToggle />
           <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500" onClick={handleLogout}>
             <LogOut className="size-4 mr-2" />
-            Log out
+            {t.nav.log_out}
           </Button>
         </div>
       </aside>
@@ -106,7 +111,7 @@ export function DashboardShell({
             <MessageSquareHeart className="size-5 text-indigo-600" />
             TestiSpark
           </Link>
-          <MobileNav pathname={pathname} onLogout={handleLogout} />
+          <MobileNav pathname={pathname} onLogout={handleLogout} t={t} />
         </header>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
@@ -115,7 +120,7 @@ export function DashboardShell({
   );
 }
 
-function MobileNav({ pathname, onLogout }: { pathname: string; onLogout: () => void }) {
+function MobileNav({ pathname, onLogout, t }: { pathname: string; onLogout: () => void; t: Dictionary }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -142,11 +147,12 @@ function MobileNav({ pathname, onLogout }: { pathname: string; onLogout: () => v
           <MessageSquareHeart className="size-5 text-indigo-600" />
           TestiSpark
         </SheetTitle>
-        <NavLinks pathname={pathname} />
+        <NavLinks pathname={pathname} t={t} />
         <div className="mt-8 pt-4 border-t">
+          <LanguageToggle />
           <Button variant="ghost" size="sm" className="w-full justify-start text-gray-500" onClick={onLogout}>
             <LogOut className="size-4 mr-2" />
-            Log out
+            {t.nav.log_out}
           </Button>
         </div>
       </SheetContent>

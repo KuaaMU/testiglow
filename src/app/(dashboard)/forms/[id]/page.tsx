@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+import { useT } from '@/lib/i18n/context';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,6 +73,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function EditFormPage() {
+  const t = useT();
   const router = useRouter();
   const params = useParams();
   const formId = params.id as string;
@@ -172,9 +174,9 @@ export default function EditFormPage() {
 
     if (!error) {
       setIsActive(newActive);
-      toast.success(newActive ? 'Form activated.' : 'Form paused.');
+      toast.success(newActive ? t.forms.form_activated : t.forms.form_paused);
     } else {
-      toast.error('Failed to update form status.');
+      toast.error(t.forms.save_failed);
     }
   }
 
@@ -195,7 +197,7 @@ export default function EditFormPage() {
           .maybeSingle();
 
         if (existing) {
-          setSlugError('This slug is already taken. Please choose a different one.');
+          setSlugError(t.forms.slug_taken);
           setIsSaving(false);
           return;
         }
@@ -218,16 +220,16 @@ export default function EditFormPage() {
 
       if (error) {
         if (error.code === '23505') {
-          setSlugError('This slug is already taken. Please choose a different one.');
+          setSlugError(t.forms.slug_taken);
         } else {
           console.error('Error updating form:', error);
-          toast.error('Failed to save form.');
+          toast.error(t.forms.save_failed);
         }
         setIsSaving(false);
         return;
       }
 
-      toast.success('Form saved successfully.');
+      toast.success(t.forms.form_saved);
       router.push('/forms');
       router.refresh();
     } catch (err) {
@@ -274,9 +276,9 @@ export default function EditFormPage() {
           </Link>
         </Button>
         <div className="flex-1">
-          <h1 className="text-3xl font-bold tracking-tight">Edit Form</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t.forms.edit_form}</h1>
           <p className="text-muted-foreground mt-1">
-            Update your testimonial collection form settings.
+            {t.forms.edit_form_desc}
           </p>
         </div>
       </div>
@@ -284,9 +286,9 @@ export default function EditFormPage() {
       {/* Collection URL Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Collection URL</CardTitle>
+          <CardTitle className="text-base">{t.forms.collection_url}</CardTitle>
           <CardDescription>
-            Share this link with customers to collect testimonials.
+            {t.forms.collection_url_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -323,9 +325,9 @@ export default function EditFormPage() {
       {/* Public Wall URL Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Public Wall</CardTitle>
+          <CardTitle className="text-base">{t.forms.public_wall}</CardTitle>
           <CardDescription>
-            A public page showcasing all approved testimonials for this form.
+            {t.forms.public_wall_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -354,12 +356,12 @@ export default function EditFormPage() {
         <CardContent className="flex items-center justify-between pt-6">
           <div className="space-y-0.5">
             <Label htmlFor="active-toggle" className="text-base font-medium">
-              Form Active
+              {t.forms.form_active}
             </Label>
             <p className="text-muted-foreground text-sm">
               {isActive
-                ? 'This form is currently accepting testimonials.'
-                : 'This form is paused and not accepting testimonials.'}
+                ? t.forms.form_active_on
+                : t.forms.form_active_off}
             </p>
           </div>
           <Switch
@@ -373,9 +375,9 @@ export default function EditFormPage() {
       {/* Form Details Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Form Details</CardTitle>
+          <CardTitle>{t.forms.form_details}</CardTitle>
           <CardDescription>
-            Configure how your testimonial collection form looks and behaves.
+            {t.forms.form_details_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -386,12 +388,12 @@ export default function EditFormPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t.forms.name}</FormLabel>
                     <FormControl>
-                      <Input placeholder="My Awesome Product" {...field} />
+                      <Input placeholder={t.forms.name_placeholder} {...field} />
                     </FormControl>
                     <FormDescription>
-                      Internal name for this form. Only visible to you.
+                      {t.forms.name_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -403,12 +405,12 @@ export default function EditFormPage() {
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug</FormLabel>
+                    <FormLabel>{t.forms.slug}</FormLabel>
                     <FormControl>
-                      <Input placeholder="my-awesome-product" {...field} />
+                      <Input placeholder={t.forms.slug_placeholder} {...field} />
                     </FormControl>
                     <FormDescription>
-                      URL-friendly identifier. Your collection page will be at{' '}
+                      {t.forms.slug_desc}{' '}
                       <code className="bg-muted rounded px-1 text-xs">
                         /collect/{field.value || 'your-slug'}
                       </code>
@@ -426,15 +428,15 @@ export default function EditFormPage() {
                 name="headline"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Headline</FormLabel>
+                    <FormLabel>{t.forms.headline}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="We'd love to hear from you!"
+                        placeholder={t.forms.headline_placeholder}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Shown at the top of the collection page.
+                      {t.forms.headline_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -446,16 +448,16 @@ export default function EditFormPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t.forms.description}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Share your experience with our product..."
+                        placeholder={t.forms.description_placeholder}
                         rows={3}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Additional context shown below the headline.
+                      {t.forms.description_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -467,7 +469,7 @@ export default function EditFormPage() {
                 name="brand_color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Brand Color</FormLabel>
+                    <FormLabel>{t.forms.brand_color}</FormLabel>
                     <div className="flex items-center gap-3">
                       <FormControl>
                         <Input
@@ -484,7 +486,7 @@ export default function EditFormPage() {
                       />
                     </div>
                     <FormDescription>
-                      Used as the accent color on the collection page.
+                      {t.forms.brand_color_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -496,16 +498,16 @@ export default function EditFormPage() {
                 name="thank_you_message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thank You Message</FormLabel>
+                    <FormLabel>{t.forms.thank_you}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Thank you for your testimonial!"
+                        placeholder={t.forms.thank_you_placeholder}
                         rows={2}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Shown after a customer submits their testimonial.
+                      {t.forms.thank_you_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -514,11 +516,11 @@ export default function EditFormPage() {
 
               <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" type="button" asChild>
-                  <Link href="/forms">Cancel</Link>
+                  <Link href="/forms">{t.common.cancel}</Link>
                 </Button>
                 <Button type="submit" disabled={isSaving}>
                   {isSaving && <Loader2 className="size-4 animate-spin" />}
-                  Save Changes
+                  {t.forms.save_changes}
                 </Button>
               </div>
             </form>
@@ -529,15 +531,15 @@ export default function EditFormPage() {
       {/* Custom Questions Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Collection Questions</CardTitle>
+          <CardTitle className="text-base">{t.forms.questions_title}</CardTitle>
           <CardDescription>
-            Customize the questions shown on your testimonial collection form.
+            {t.forms.questions_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <QuestionsEditor questions={questions} onChange={setQuestions} />
           <p className="mt-3 text-xs text-muted-foreground">
-            Changes are saved when you click &quot;Save Changes&quot; above.
+            {t.forms.questions_save_note}
           </p>
         </CardContent>
       </Card>
@@ -545,9 +547,9 @@ export default function EditFormPage() {
       {/* Request via Email Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Request via Email</CardTitle>
+          <CardTitle className="text-base">{t.forms.email_title}</CardTitle>
           <CardDescription>
-            Copy a pre-written email template to send to your customers requesting testimonials.
+            {t.forms.email_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -561,10 +563,9 @@ export default function EditFormPage() {
       {/* Danger Zone */}
       <Card className="border-destructive/50">
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
+          <CardTitle className="text-destructive">{t.forms.danger_zone}</CardTitle>
           <CardDescription>
-            Permanently delete this form and all associated testimonials. This
-            action cannot be undone.
+            {t.forms.danger_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -572,16 +573,15 @@ export default function EditFormPage() {
             <DialogTrigger asChild>
               <Button variant="destructive">
                 <Trash2 className="size-4" />
-                Delete Form
+                {t.forms.delete_form}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Are you absolutely sure?</DialogTitle>
+                <DialogTitle>{t.forms.delete_confirm}</DialogTitle>
                 <DialogDescription>
-                  This will permanently delete the form{' '}
-                  <span className="font-semibold">{formData?.name}</span> and all
-                  its testimonials. This action cannot be undone.
+                  {t.forms.delete_confirm_desc_1}{' '}
+                  <span className="font-semibold">{formData?.name}</span> {t.forms.delete_confirm_desc_2}
                 </DialogDescription>
               </DialogHeader>
               <DialogFooter>
@@ -589,7 +589,7 @@ export default function EditFormPage() {
                   variant="outline"
                   onClick={() => setDeleteDialogOpen(false)}
                 >
-                  Cancel
+                  {t.common.cancel}
                 </Button>
                 <Button
                   variant="destructive"
@@ -597,7 +597,7 @@ export default function EditFormPage() {
                   disabled={isDeleting}
                 >
                   {isDeleting && <Loader2 className="size-4 animate-spin" />}
-                  Delete Permanently
+                  {t.forms.delete_permanently}
                 </Button>
               </DialogFooter>
             </DialogContent>

@@ -42,12 +42,14 @@ import {
 } from 'lucide-react';
 import { SocialCardDialog } from '@/components/dashboard/social-card-dialog';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n/context';
 
 const PAGE_SIZE = 12;
 
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 export default function TestimonialsPage() {
+  const t = useT();
   const supabase = createClient();
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
@@ -290,15 +292,15 @@ export default function TestimonialsPage() {
   const statusBadge = (status: Testimonial['status']) => {
     const map: Record<string, { label: string; className: string }> = {
       pending: {
-        label: 'Pending',
+        label: t.common.pending,
         className: 'bg-yellow-100 text-yellow-800 border-yellow-300',
       },
       approved: {
-        label: 'Approved',
+        label: t.common.approved,
         className: 'bg-green-100 text-green-800 border-green-300',
       },
       rejected: {
-        label: 'Rejected',
+        label: t.common.rejected,
         className: 'bg-red-100 text-red-800 border-red-300',
       },
     };
@@ -336,14 +338,14 @@ export default function TestimonialsPage() {
     });
   };
 
-  const renderTestimonialCard = (t: Testimonial) => {
-    const initial = t.author_name?.charAt(0)?.toUpperCase() || '?';
-    const isLoading = actionLoading[t.id] || false;
-    const displaySummary = summaries[t.id] || t.ai_summary;
-    const formName = getFormName(t.form_id);
+  const renderTestimonialCard = (item: Testimonial) => {
+    const initial = item.author_name?.charAt(0)?.toUpperCase() || '?';
+    const isLoading = actionLoading[item.id] || false;
+    const displaySummary = summaries[item.id] || item.ai_summary;
+    const formName = getFormName(item.form_id);
 
     return (
-      <Card key={t.id} className="relative">
+      <Card key={item.id} className="relative">
         <CardContent className="space-y-3">
           {/* Header: Avatar, Name, Company, Status */}
           <div className="flex items-start justify-between gap-3">
@@ -352,30 +354,30 @@ export default function TestimonialsPage() {
                 {initial}
               </div>
               <div>
-                <p className="font-medium leading-tight">{t.author_name}</p>
-                {t.author_company && (
+                <p className="font-medium leading-tight">{item.author_name}</p>
+                {item.author_company && (
                   <p className="text-sm text-muted-foreground">
-                    {t.author_company}
+                    {item.author_company}
                   </p>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2">
               <button
-                onClick={() => toggleFeatured(t.id, t.is_featured)}
-                disabled={!!actionLoading[`feat-${t.id}`]}
+                onClick={() => toggleFeatured(item.id, item.is_featured)}
+                disabled={!!actionLoading[`feat-${item.id}`]}
                 className="transition-colors hover:text-yellow-500"
-                title={t.is_featured ? 'Unfeature' : 'Feature'}
+                title={t.common.featured}
               >
                 <StarIcon
                   className={`size-5 ${
-                    t.is_featured
+                    item.is_featured
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'text-muted-foreground/40'
                   }`}
                 />
               </button>
-              {statusBadge(t.status)}
+              {statusBadge(item.status)}
             </div>
           </div>
 
@@ -387,25 +389,25 @@ export default function TestimonialsPage() {
           )}
 
           {/* Rating */}
-          {renderStars(t.rating)}
+          {renderStars(item.rating)}
 
           {/* Content */}
           <p className="text-sm leading-relaxed text-foreground/90">
-            {t.content.length > 250
-              ? `${t.content.slice(0, 250)}...`
-              : t.content}
+            {item.content.length > 250
+              ? `${item.content.slice(0, 250)}...`
+              : item.content}
           </p>
 
           {/* Video */}
-          {t.video_url && (
+          {item.video_url && (
             <a
-              href={t.video_url}
+              href={item.video_url}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-blue-200 bg-blue-50 px-2.5 py-1.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
             >
               <VideoIcon className="size-3.5" />
-              Video Testimonial
+              {t.testimonials.video_testimonial}
             </a>
           )}
 
@@ -413,7 +415,7 @@ export default function TestimonialsPage() {
           {displaySummary && (
             <div className="rounded-md border border-purple-200 bg-purple-50 p-3 dark:border-purple-800 dark:bg-purple-950/30">
               <p className="mb-1 text-xs font-medium text-purple-700 dark:text-purple-300">
-                AI Summary
+                {t.testimonials.ai_summary}
               </p>
               <p className="text-sm text-purple-900 dark:text-purple-100">
                 {displaySummary}
@@ -422,9 +424,9 @@ export default function TestimonialsPage() {
           )}
 
           {/* AI Tags */}
-          {t.ai_tags && t.ai_tags.length > 0 && (
+          {item.ai_tags && item.ai_tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {t.ai_tags.map((tag) => (
+              {item.ai_tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
@@ -438,67 +440,67 @@ export default function TestimonialsPage() {
 
           {/* Date */}
           <p className="text-xs text-muted-foreground">
-            {formatDate(t.created_at)}
+            {formatDate(item.created_at)}
           </p>
 
           {/* Actions */}
           <div className="flex flex-wrap items-center gap-2 border-t pt-3">
-            {(t.status === 'pending' || t.status === 'rejected') && (
+            {(item.status === 'pending' || item.status === 'rejected') && (
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => updateStatus(t.id, 'approved')}
+                onClick={() => updateStatus(item.id, 'approved')}
                 disabled={isLoading}
                 className="gap-1.5 text-green-700 hover:bg-green-50 hover:text-green-800"
               >
                 <CheckCircleIcon className="size-3.5" />
-                Approve
+                {t.common.approve}
               </Button>
             )}
-            {(t.status === 'pending' || t.status === 'approved') && (
+            {(item.status === 'pending' || item.status === 'approved') && (
               <Button
                 size="sm"
                 variant="outline"
-                onClick={() => updateStatus(t.id, 'rejected')}
+                onClick={() => updateStatus(item.id, 'rejected')}
                 disabled={isLoading}
                 className="gap-1.5 text-red-700 hover:bg-red-50 hover:text-red-800"
               >
                 <XCircleIcon className="size-3.5" />
-                Reject
+                {t.common.reject}
               </Button>
             )}
             <Button
               size="sm"
               variant="outline"
-              onClick={() => handleSummarize(t.id)}
-              disabled={!!actionLoading[`ai-${t.id}`]}
+              onClick={() => handleSummarize(item.id)}
+              disabled={!!actionLoading[`ai-${item.id}`]}
               className="gap-1.5"
             >
-              {actionLoading[`ai-${t.id}`] ? (
+              {actionLoading[`ai-${item.id}`] ? (
                 <Loader2Icon className="size-3.5 animate-spin" />
               ) : (
                 <SparklesIcon className="size-3.5" />
               )}
-              AI Summarize
+              {t.testimonials.ai_summarize}
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setShareTarget(t)}
+              onClick={() => setShareTarget(item)}
               className="gap-1.5"
             >
               <ShareIcon className="size-3.5" />
-              Share
+              {t.testimonials.share}
             </Button>
             <Button
               size="sm"
               variant="outline"
-              onClick={() => setDeleteTarget(t)}
-              disabled={!!actionLoading[`del-${t.id}`]}
+              onClick={() => setDeleteTarget(item)}
+              disabled={!!actionLoading[`del-${item.id}`]}
               className="gap-1.5 text-red-600 hover:bg-red-50 hover:text-red-700"
             >
               <Trash2Icon className="size-3.5" />
-              Delete
+              {t.common.delete}
             </Button>
           </div>
         </CardContent>
@@ -511,16 +513,16 @@ export default function TestimonialsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Testimonials</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.testimonials.title}</h1>
           <p className="text-muted-foreground">
-            Manage and review all your collected testimonials.
+            {t.testimonials.desc}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Button asChild variant="outline" className="gap-1.5">
             <Link href="/testimonials/import">
               <ImportIcon className="size-4" />
-              Import
+              {t.common.import}
             </Link>
           </Button>
           {plan === 'pro' && (
@@ -548,7 +550,7 @@ export default function TestimonialsPage() {
               }}
             >
               <DownloadIcon className="size-4" />
-              Export CSV
+              {t.testimonials.export_csv}
             </Button>
           )}
         </div>
@@ -559,7 +561,7 @@ export default function TestimonialsPage() {
         <div className="relative max-w-md flex-1">
           <SearchIcon className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search by content or author..."
+            placeholder={t.testimonials.search_placeholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -568,10 +570,10 @@ export default function TestimonialsPage() {
         {forms.length > 1 && (
           <Select value={formFilter} onValueChange={setFormFilter}>
             <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="All Forms" />
+              <SelectValue placeholder={t.testimonials.all_forms} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Forms</SelectItem>
+              <SelectItem value="all">{t.testimonials.all_forms}</SelectItem>
               {forms.map((f) => (
                 <SelectItem key={f.id} value={f.id}>
                   {f.name}
@@ -586,7 +588,7 @@ export default function TestimonialsPage() {
       {pendingTestimonials.length > 0 && (
         <div className="flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
           <p className="flex-1 text-sm text-yellow-800">
-            <span className="font-medium">{pendingTestimonials.length}</span> pending testimonial{pendingTestimonials.length > 1 ? 's' : ''} awaiting review.
+            <span className="font-medium">{pendingTestimonials.length}</span> {t.testimonials.pending_banner_2}
           </p>
           <Button
             size="sm"
@@ -596,7 +598,7 @@ export default function TestimonialsPage() {
             className="gap-1.5 border-green-300 text-green-700 hover:bg-green-50"
           >
             {bulkLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : <CheckCheck className="size-3.5" />}
-            Approve All
+            {t.testimonials.approve_all}
           </Button>
           <Button
             size="sm"
@@ -606,7 +608,7 @@ export default function TestimonialsPage() {
             className="gap-1.5 border-red-300 text-red-700 hover:bg-red-50"
           >
             {bulkLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : <XIcon className="size-3.5" />}
-            Reject All
+            {t.testimonials.reject_all}
           </Button>
         </div>
       )}
@@ -617,10 +619,10 @@ export default function TestimonialsPage() {
         onValueChange={(v) => setStatusFilter(v as StatusFilter)}
       >
         <TabsList>
-          <TabsTrigger value="all">All</TabsTrigger>
-          <TabsTrigger value="pending">Pending</TabsTrigger>
-          <TabsTrigger value="approved">Approved</TabsTrigger>
-          <TabsTrigger value="rejected">Rejected</TabsTrigger>
+          <TabsTrigger value="all">{t.testimonials.all}</TabsTrigger>
+          <TabsTrigger value="pending">{t.common.pending}</TabsTrigger>
+          <TabsTrigger value="approved">{t.common.approved}</TabsTrigger>
+          <TabsTrigger value="rejected">{t.common.rejected}</TabsTrigger>
         </TabsList>
 
         {['all', 'pending', 'approved', 'rejected'].map((tab) => (
@@ -632,11 +634,11 @@ export default function TestimonialsPage() {
             ) : testimonials.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 text-center">
                 <MessageSquareIcon className="mb-4 size-12 text-muted-foreground/40" />
-                <h3 className="text-lg font-medium">No testimonials yet</h3>
+                <h3 className="text-lg font-medium">{t.testimonials.no_testimonials}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">
                   {tab === 'all'
-                    ? 'Testimonials will appear here once customers submit them through your forms.'
-                    : `No ${tab} testimonials found.`}
+                    ? t.testimonials.no_testimonials_desc
+                    : t.testimonials.no_filtered.replace('{status}', tab)}
                 </p>
               </div>
             ) : (
@@ -654,10 +656,10 @@ export default function TestimonialsPage() {
                       {loadingMore ? (
                         <>
                           <Loader2Icon className="size-4 animate-spin" />
-                          Loading...
+                          {t.common.loading}
                         </>
                       ) : (
-                        'Load More'
+                        t.common.load_more
                       )}
                     </Button>
                   </div>
@@ -675,25 +677,25 @@ export default function TestimonialsPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete Testimonial</DialogTitle>
+            <DialogTitle>{t.testimonials.delete_title}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the testimonial from{' '}
-              <span className="font-medium">{deleteTarget?.author_name}</span>?
-              This action cannot be undone.
+              {t.testimonials.delete_desc_1}{' '}
+              <span className="font-medium">{deleteTarget?.author_name}</span>
+              {t.testimonials.delete_desc_2}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)}>
-              Cancel
+              {t.common.cancel}
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
               {actionLoading[`del-${deleteTarget?.id}`] ? (
                 <>
                   <Loader2Icon className="size-4 animate-spin" />
-                  Deleting...
+                  {t.testimonials.deleting}
                 </>
               ) : (
-                'Delete'
+                t.common.delete
               )}
             </Button>
           </DialogFooter>

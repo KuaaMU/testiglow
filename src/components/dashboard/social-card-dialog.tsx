@@ -2,6 +2,7 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
+import { useT } from '@/lib/i18n/context';
 import type { Testimonial } from '@/types';
 import {
   Dialog,
@@ -46,8 +47,16 @@ export function SocialCardDialog({
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('minimal');
   const [isDownloading, setIsDownloading] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   const showWatermark = plan === 'free';
+
+  const templateLabels: Record<TemplateType, string> = {
+    minimal: t.social_card.minimal,
+    gradient: t.social_card.gradient,
+    dark: t.social_card.dark,
+    brand: t.social_card.brand,
+  };
 
   const handleDownload = useCallback(async () => {
     if (!cardRef.current) return;
@@ -94,9 +103,9 @@ export function SocialCardDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Generate Social Card</DialogTitle>
+          <DialogTitle>{t.social_card.title}</DialogTitle>
           <DialogDescription>
-            Choose a template and download as PNG for sharing on social media.
+            {t.social_card.select_template}
           </DialogDescription>
         </DialogHeader>
 
@@ -115,7 +124,7 @@ export function SocialCardDialog({
               <div
                 className={`h-12 w-20 rounded-md ${tmpl.preview}`}
               />
-              <span className="text-xs font-medium">{tmpl.label}</span>
+              <span className="text-xs font-medium">{templateLabels[tmpl.id]}</span>
             </button>
           ))}
         </div>
@@ -155,7 +164,7 @@ export function SocialCardDialog({
               ) : (
                 <Download className="size-4" />
               )}
-              Download PNG
+              {t.social_card.download_png}
             </Button>
           </div>
         </div>

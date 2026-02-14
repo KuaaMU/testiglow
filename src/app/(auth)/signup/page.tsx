@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageSquareHeart } from "lucide-react";
+import { useT } from "@/lib/i18n/context";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -16,6 +18,7 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
+  const t = useT();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -44,15 +47,18 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50 relative">
+      <div className="absolute top-4 right-4">
+        <LanguageToggle variant="outline" />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="inline-flex items-center justify-center gap-2 mb-2">
             <MessageSquareHeart className="size-6 text-indigo-600" />
             <span className="font-bold text-xl">TestiSpark</span>
           </Link>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>Start collecting testimonials for free</CardDescription>
+          <CardTitle>{t.auth.create_account}</CardTitle>
+          <CardDescription>{t.auth.create_account_desc}</CardDescription>
         </CardHeader>
         <CardContent>
           <Button variant="outline" className="w-full mb-4" onClick={handleGoogleLogin}>
@@ -62,38 +68,38 @@ export default function SignupPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continue with Google
+            {t.auth.continue_google}
           </Button>
 
           <div className="relative mb-4">
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t" /></div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or</span>
+              <span className="bg-white px-2 text-gray-500">{t.common.or}</span>
             </div>
           </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
-              <Label htmlFor="name">Full name</Label>
+              <Label htmlFor="name">{t.auth.full_name}</Label>
               <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" required />
             </div>
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t.auth.email}</Label>
               <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t.auth.password}</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" minLength={6} required />
             </div>
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
-              {loading ? "Creating account..." : "Create account"}
+              {loading ? t.auth.creating : t.auth.create_btn}
             </Button>
           </form>
 
           <p className="text-sm text-center text-gray-500 mt-4">
-            Already have an account?{" "}
-            <Link href="/login" className="text-indigo-600 hover:underline">Sign in</Link>
+            {t.auth.have_account}{" "}
+            <Link href="/login" className="text-indigo-600 hover:underline">{t.auth.sign_in}</Link>
           </p>
         </CardContent>
       </Card>

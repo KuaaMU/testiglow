@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { Star, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n/context';
 import type { Form } from '@/types';
 
 // ---------------------------------------------------------------------------
@@ -58,6 +59,7 @@ function StarRating({
 export default function CollectPage() {
   const params = useParams();
   const slug = params.slug as string;
+  const t = useT();
 
   const [formData, setFormData] = useState<Form | null>(null);
   const [isLoadingForm, setIsLoadingForm] = useState(true);
@@ -166,11 +168,10 @@ export default function CollectPage() {
         <div className="text-center">
           <AlertCircle className="mx-auto mb-4 size-12 text-gray-400" />
           <h1 className="text-2xl font-bold text-gray-900">
-            Form Not Found
+            {t.collect.not_found}
           </h1>
           <p className="mt-2 text-gray-600">
-            This testimonial form doesn&apos;t exist or is no longer accepting
-            submissions.
+            {t.collect.not_found_desc}
           </p>
         </div>
       </div>
@@ -235,7 +236,7 @@ export default function CollectPage() {
                 htmlFor="author_name"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Name <span className="text-red-500">*</span>
+                {t.collect.your_name} <span className="text-red-500">*</span>
               </label>
               <input
                 id="author_name"
@@ -267,7 +268,7 @@ export default function CollectPage() {
                 htmlFor="author_email"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Email
+                {t.collect.your_email}
               </label>
               <input
                 id="author_email"
@@ -294,7 +295,7 @@ export default function CollectPage() {
                   htmlFor="author_title"
                   className="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                  Job Title
+                  {t.collect.job_title}
                 </label>
                 <input
                   id="author_title"
@@ -318,7 +319,7 @@ export default function CollectPage() {
                   htmlFor="author_company"
                   className="mb-1.5 block text-sm font-medium text-gray-700"
                 >
-                  Company
+                  {t.collect.company}
                 </label>
                 <input
                   id="author_company"
@@ -342,7 +343,7 @@ export default function CollectPage() {
             {/* Star Rating */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-700">
-                Rating
+                {t.collect.rating_label}
               </label>
               <StarRating
                 value={rating}
@@ -357,7 +358,7 @@ export default function CollectPage() {
                 htmlFor="content"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Your Testimonial <span className="text-red-500">*</span>
+                {t.collect.content_label} <span className="text-red-500">*</span>
               </label>
               <textarea
                 id="content"
@@ -365,7 +366,7 @@ export default function CollectPage() {
                 rows={4}
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                placeholder="Tell us about your experience..."
+                placeholder={t.collect.content_placeholder}
                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 shadow-sm outline-none transition-shadow placeholder:text-gray-400"
                 onFocus={(e) => {
                   e.target.style.boxShadow = `0 0 0 2px ${brandColor}`;
@@ -435,8 +436,7 @@ export default function CollectPage() {
                 htmlFor="video_url"
                 className="mb-1.5 block text-sm font-medium text-gray-700"
               >
-                Video Testimonial URL{' '}
-                <span className="text-xs font-normal text-gray-400">(optional)</span>
+                {t.collect.video_url}
               </label>
               <input
                 id="video_url"
@@ -479,10 +479,10 @@ export default function CollectPage() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
-                  Submitting...
+                  {t.collect.submitting}
                 </>
               ) : (
-                'Submit Testimonial'
+                t.collect.submit
               )}
             </button>
           </form>
@@ -490,8 +490,7 @@ export default function CollectPage() {
 
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-400">
-          Powered by{' '}
-          <span className="font-semibold text-gray-500">TestiSpark</span>
+          {t.common.powered_by}
         </p>
       </div>
     </div>

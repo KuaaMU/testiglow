@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CopyUrlButton } from '@/components/dashboard/copy-url-button';
+import { getDict } from '@/lib/i18n/server';
 import type { Form } from '@/types';
 
 async function getForms(): Promise<(Form & { testimonial_count: number })[]> {
@@ -66,20 +67,21 @@ function FormatDate({ date }: { date: string }) {
 export default async function FormsPage() {
   const forms = await getForms();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || '';
+  const t = await getDict();
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Forms</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t.forms.title}</h1>
           <p className="text-muted-foreground mt-1">
-            Create and manage your testimonial collection forms.
+            {t.forms.desc}
           </p>
         </div>
         <Button asChild>
           <Link href="/forms/new">
             <Plus className="size-4" />
-            Create New Form
+            {t.forms.create_new}
           </Link>
         </Button>
       </div>
@@ -90,15 +92,14 @@ export default async function FormsPage() {
             <div className="bg-muted mb-4 flex size-16 items-center justify-center rounded-full">
               <FileText className="text-muted-foreground size-8" />
             </div>
-            <h2 className="text-xl font-semibold">No forms yet</h2>
+            <h2 className="text-xl font-semibold">{t.forms.no_forms}</h2>
             <p className="text-muted-foreground mb-6 mt-2 max-w-sm">
-              Create your first testimonial collection form to start gathering
-              feedback from your customers.
+              {t.forms.no_forms_desc}
             </p>
             <Button asChild>
               <Link href="/forms/new">
                 <Plus className="size-4" />
-                Create Your First Form
+                {t.forms.create_first}
               </Link>
             </Button>
           </CardContent>
@@ -116,7 +117,7 @@ export default async function FormsPage() {
                   <Badge
                     variant={form.is_active ? 'default' : 'secondary'}
                   >
-                    {form.is_active ? 'Active' : 'Inactive'}
+                    {form.is_active ? t.forms.active : t.forms.inactive}
                   </Badge>
                 </div>
                 <CardDescription className="font-mono text-xs">
@@ -131,8 +132,8 @@ export default async function FormsPage() {
                     <span>
                       {form.testimonial_count}{' '}
                       {form.testimonial_count === 1
-                        ? 'testimonial'
-                        : 'testimonials'}
+                        ? t.forms.testimonial
+                        : t.forms.testimonials}
                     </span>
                   </div>
                   <div className="text-muted-foreground flex items-center gap-1.5">
@@ -146,7 +147,7 @@ export default async function FormsPage() {
                 <Button variant="outline" size="sm" asChild>
                   <Link href={`/forms/${form.id}`}>
                     <Pencil className="size-3.5" />
-                    Edit
+                    {t.common.edit}
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
@@ -156,7 +157,7 @@ export default async function FormsPage() {
                     rel="noopener noreferrer"
                   >
                     <ExternalLink className="size-3.5" />
-                    Preview
+                    {t.common.preview}
                   </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
@@ -166,7 +167,7 @@ export default async function FormsPage() {
                     rel="noopener noreferrer"
                   >
                     <Globe className="size-3.5" />
-                    Wall
+                    {t.forms.wall}
                   </Link>
                 </Button>
                 <CopyUrlButton url={`${baseUrl}/collect/${form.slug}`} />

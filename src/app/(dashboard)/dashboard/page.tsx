@@ -5,11 +5,13 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { MessageSquare, FileText, Code2, Clock, Plus, StarIcon, ArrowRight } from "lucide-react";
 import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
+import { getDict } from "@/lib/i18n/server";
 import type { Testimonial } from "@/types";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getDict();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -55,10 +57,10 @@ export default async function DashboardPage() {
   }
 
   const stats = [
-    { label: "Total Testimonials", value: totalTestimonials || 0, icon: MessageSquare },
-    { label: "Pending Review", value: pendingCount || 0, icon: Clock },
-    { label: "Collection Forms", value: formsCount || 0, icon: FileText },
-    { label: "Active Widgets", value: widgetsCount || 0, icon: Code2 },
+    { label: t.dashboard.total_testimonials, value: totalTestimonials || 0, icon: MessageSquare },
+    { label: t.dashboard.pending_review, value: pendingCount || 0, icon: Clock },
+    { label: t.dashboard.collection_forms, value: formsCount || 0, icon: FileText },
+    { label: t.dashboard.active_widgets, value: widgetsCount || 0, icon: Code2 },
   ];
 
   return (
@@ -66,14 +68,14 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {profile?.full_name || "there"}
+            {t.dashboard.welcome} {profile?.full_name || "there"}
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Here&apos;s what&apos;s happening with your testimonials.
+            {t.dashboard.subtitle}
           </p>
         </div>
         <Badge variant={profile?.plan === "pro" ? "default" : "secondary"}>
-          {profile?.plan === "pro" ? "Pro Plan" : "Free Plan"}
+          {profile?.plan === "pro" ? t.dashboard.pro_plan : t.dashboard.free_plan}
         </Badge>
       </div>
 
@@ -97,11 +99,11 @@ export default async function DashboardPage() {
         <Button asChild className="bg-indigo-600 hover:bg-indigo-700">
           <Link href="/forms/new">
             <Plus className="size-4 mr-2" />
-            Create Form
+            {t.dashboard.create_form}
           </Link>
         </Button>
         <Button variant="outline" asChild>
-          <Link href="/testimonials">View Testimonials</Link>
+          <Link href="/testimonials">{t.dashboard.view_testimonials}</Link>
         </Button>
       </div>
 
@@ -109,37 +111,37 @@ export default async function DashboardPage() {
       {recentTestimonials.length > 0 && (
         <div className="mt-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Pending Review</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t.dashboard.pending_review}</h2>
             <Button variant="ghost" size="sm" asChild>
               <Link href="/testimonials" className="gap-1.5">
-                View all
+                {t.common.view_all}
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
           </div>
           <div className="space-y-3">
-            {recentTestimonials.map((t) => {
-              const initial = t.author_name?.charAt(0)?.toUpperCase() || '?';
+            {recentTestimonials.map((testimonial) => {
+              const initial = testimonial.author_name?.charAt(0)?.toUpperCase() || '?';
               return (
-                <Card key={t.id}>
+                <Card key={testimonial.id}>
                   <CardContent className="flex items-start gap-4 py-4">
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
                       {initial}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-gray-900">{t.author_name}</p>
-                        {t.author_company && (
-                          <span className="text-xs text-gray-500">{t.author_company}</span>
+                        <p className="text-sm font-medium text-gray-900">{testimonial.author_name}</p>
+                        {testimonial.author_company && (
+                          <span className="text-xs text-gray-500">{testimonial.author_company}</span>
                         )}
                       </div>
-                      {t.rating !== null && (
+                      {testimonial.rating !== null && (
                         <div className="mt-1 flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <StarIcon
                               key={i}
                               className={`size-3 ${
-                                i < (t.rating ?? 0)
+                                i < (testimonial.rating ?? 0)
                                   ? 'fill-yellow-400 text-yellow-400'
                                   : 'text-gray-200'
                               }`}
@@ -148,16 +150,16 @@ export default async function DashboardPage() {
                         </div>
                       )}
                       <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                        {t.content}
+                        {testimonial.content}
                       </p>
                       <p className="mt-1 text-xs text-gray-400">
-                        {new Date(t.created_at).toLocaleDateString('en-US', {
+                        {new Date(testimonial.created_at).toLocaleDateString('en-US', {
                           month: 'short', day: 'numeric', year: 'numeric',
                         })}
                       </p>
                     </div>
                     <Badge variant="outline" className="shrink-0 bg-yellow-100 text-yellow-800 border-yellow-300">
-                      Pending
+                      {t.common.pending}
                     </Badge>
                   </CardContent>
                 </Card>

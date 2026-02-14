@@ -9,6 +9,7 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 import { createClient } from '@/lib/supabase/client';
+import { useT } from '@/lib/i18n/context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,6 +59,7 @@ function generateSlug(name: string): string {
 }
 
 export default function NewFormPage() {
+  const t = useT();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [slugError, setSlugError] = useState<string | null>(null);
@@ -107,7 +109,7 @@ export default function NewFormPage() {
         .maybeSingle();
 
       if (existing) {
-        setSlugError('This slug is already taken. Please choose a different one.');
+        setSlugError(t.forms.slug_taken);
         setIsSubmitting(false);
         return;
       }
@@ -126,7 +128,7 @@ export default function NewFormPage() {
 
       if (error) {
         if (error.code === '23505') {
-          setSlugError('This slug is already taken. Please choose a different one.');
+          setSlugError(t.forms.slug_taken);
         } else {
           console.error('Error creating form:', error);
         }
@@ -151,18 +153,18 @@ export default function NewFormPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Create New Form</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t.forms.create_form_title}</h1>
           <p className="text-muted-foreground mt-1">
-            Set up a new testimonial collection form.
+            {t.forms.create_form_desc}
           </p>
         </div>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Form Details</CardTitle>
+          <CardTitle>{t.forms.form_details}</CardTitle>
           <CardDescription>
-            Configure how your testimonial collection form looks and behaves.
+            {t.forms.form_details_desc}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -173,10 +175,10 @@ export default function NewFormPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t.forms.name}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="My Awesome Product"
+                        placeholder={t.forms.name_placeholder}
                         {...field}
                         onChange={(e) => {
                           field.onChange(e);
@@ -185,7 +187,7 @@ export default function NewFormPage() {
                       />
                     </FormControl>
                     <FormDescription>
-                      Internal name for this form. Only visible to you.
+                      {t.forms.name_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -197,12 +199,12 @@ export default function NewFormPage() {
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug</FormLabel>
+                    <FormLabel>{t.forms.slug}</FormLabel>
                     <FormControl>
-                      <Input placeholder="my-awesome-product" {...field} />
+                      <Input placeholder={t.forms.slug_placeholder} {...field} />
                     </FormControl>
                     <FormDescription>
-                      URL-friendly identifier. Your collection page will be at{' '}
+                      {t.forms.slug_desc}{' '}
                       <code className="bg-muted rounded px-1 text-xs">
                         /collect/{field.value || 'your-slug'}
                       </code>
@@ -220,15 +222,15 @@ export default function NewFormPage() {
                 name="headline"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Headline</FormLabel>
+                    <FormLabel>{t.forms.headline}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="We'd love to hear from you!"
+                        placeholder={t.forms.headline_placeholder}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Shown at the top of the collection page.
+                      {t.forms.headline_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -240,16 +242,16 @@ export default function NewFormPage() {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t.forms.description}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Share your experience with our product..."
+                        placeholder={t.forms.description_placeholder}
                         rows={3}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Additional context shown below the headline.
+                      {t.forms.description_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -261,7 +263,7 @@ export default function NewFormPage() {
                 name="brand_color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Brand Color</FormLabel>
+                    <FormLabel>{t.forms.brand_color}</FormLabel>
                     <div className="flex items-center gap-3">
                       <FormControl>
                         <Input type="color" className="h-10 w-16 cursor-pointer p-1" {...field} />
@@ -274,7 +276,7 @@ export default function NewFormPage() {
                       />
                     </div>
                     <FormDescription>
-                      Used as the accent color on the collection page.
+                      {t.forms.brand_color_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -286,16 +288,16 @@ export default function NewFormPage() {
                 name="thank_you_message"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Thank You Message</FormLabel>
+                    <FormLabel>{t.forms.thank_you}</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Thank you for your testimonial!"
+                        placeholder={t.forms.thank_you_placeholder}
                         rows={2}
                         {...field}
                       />
                     </FormControl>
                     <FormDescription>
-                      Shown after a customer submits their testimonial.
+                      {t.forms.thank_you_desc}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -304,11 +306,11 @@ export default function NewFormPage() {
 
               <div className="flex justify-end gap-3 pt-4">
                 <Button variant="outline" type="button" asChild>
-                  <Link href="/forms">Cancel</Link>
+                  <Link href="/forms">{t.common.cancel}</Link>
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting && <Loader2 className="size-4 animate-spin" />}
-                  Create Form
+                  {t.forms.create_new}
                 </Button>
               </div>
             </form>

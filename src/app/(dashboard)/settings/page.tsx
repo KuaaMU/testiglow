@@ -6,10 +6,12 @@ import { CryptoCheckoutButton } from "@/components/dashboard/crypto-checkout";
 import { ProfileForm } from "@/components/dashboard/profile-form";
 import { getCheckoutUrl } from "@/lib/lemonsqueezy";
 import { PRO_PRICE_MONTHLY } from "@/types";
+import { getDict } from "@/lib/i18n/server";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getDict();
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -36,14 +38,14 @@ export default async function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t.settings.title}</h1>
 
       <div className="space-y-6 max-w-2xl">
         <ProfileForm userId={user!.id} initialName={profile?.full_name || ""} />
 
         <Card>
           <CardHeader>
-            <CardTitle>Email</CardTitle>
+            <CardTitle>{t.settings.email}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-gray-900">{profile?.email || user?.email}</p>
@@ -52,18 +54,18 @@ export default async function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Plan</CardTitle>
+            <CardTitle>{t.settings.plan}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <Badge variant={profile?.plan === "pro" ? "default" : "secondary"} className="mb-2">
-                  {profile?.plan === "pro" ? "Pro" : "Free"}
+                  {profile?.plan === "pro" ? t.common.pro : t.common.free}
                 </Badge>
                 <p className="text-sm text-gray-500">
                   {profile?.plan === "pro"
-                    ? "You have unlimited access to all features."
-                    : `You have used ${profile?.testimonial_count || 0} of 15 testimonials.`}
+                    ? t.settings.unlimited
+                    : t.settings.used_of.replace("{count}", String(profile?.testimonial_count || 0))}
                 </p>
               </div>
             </div>
@@ -71,13 +73,13 @@ export default async function SettingsPage() {
             {profile?.plan !== "pro" && (
               <div className="border-t pt-4 space-y-3">
                 <p className="text-sm font-medium text-gray-700">
-                  Upgrade to Pro — ${PRO_PRICE_MONTHLY}/mo
+                  {t.settings.upgrade} — ${PRO_PRICE_MONTHLY}/mo
                 </p>
 
                 {pendingPayment ? (
                   <div className="rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
                     <p className="text-sm text-yellow-800">
-                      Your USDT payment is pending verification. We&apos;ll upgrade your account within 24 hours.
+                      {t.settings.pending_payment}
                     </p>
                   </div>
                 ) : (
@@ -94,7 +96,7 @@ export default async function SettingsPage() {
                 )}
 
                 <p className="text-xs text-muted-foreground">
-                  Pay with credit card via Lemon Squeezy, or send USDT (TRC-20) directly.
+                  {t.settings.pay_desc}
                 </p>
               </div>
             )}

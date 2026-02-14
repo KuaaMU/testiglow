@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '@/lib/i18n/context';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -73,6 +74,7 @@ The ${formName} Team`;
 export function EmailTemplateGenerator({ formName, collectionUrl }: EmailTemplateGeneratorProps) {
   const [tone, setTone] = useState<Tone>('professional');
   const [copied, setCopied] = useState(false);
+  const t = useT();
 
   const template = generateTemplate(formName, collectionUrl, tone);
 
@@ -96,12 +98,12 @@ export function EmailTemplateGenerator({ formName, collectionUrl }: EmailTemplat
       <div className="flex items-center justify-between gap-4">
         <Select value={tone} onValueChange={(v) => setTone(v as Tone)}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select tone" />
+            <SelectValue placeholder={t.email_template.tone} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="professional">Professional</SelectItem>
-            <SelectItem value="casual">Casual</SelectItem>
-            <SelectItem value="friendly">Friendly</SelectItem>
+            <SelectItem value="professional">{t.email_template.professional}</SelectItem>
+            <SelectItem value="casual">{t.email_template.casual}</SelectItem>
+            <SelectItem value="friendly">{t.email_template.friendly}</SelectItem>
           </SelectContent>
         </Select>
 
@@ -109,12 +111,12 @@ export function EmailTemplateGenerator({ formName, collectionUrl }: EmailTemplat
           {copied ? (
             <>
               <CheckCircle2 className="size-3.5 text-green-500" />
-              Copied!
+              {t.common.copied}
             </>
           ) : (
             <>
               <Copy className="size-3.5" />
-              Copy Email
+              {t.email_template.copy_email}
             </>
           )}
         </Button>

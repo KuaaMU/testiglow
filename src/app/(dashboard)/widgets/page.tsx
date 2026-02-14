@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { getDict } from '@/lib/i18n/server';
 import type { Widget } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -17,17 +18,9 @@ const widgetTypeIcons: Record<Widget['type'], React.ReactNode> = {
   list: <ListIcon className="size-5" />,
 };
 
-const widgetTypeLabels: Record<Widget['type'], string> = {
-  wall: 'Wall of Love',
-  carousel: 'Carousel',
-  badge: 'Badge',
-  slider: 'Slider',
-  marquee: 'Marquee',
-  list: 'List',
-};
-
 export default async function WidgetsPage() {
   const supabase = await createClient();
+  const t = await getDict();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -47,15 +40,15 @@ export default async function WidgetsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Widgets</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.widgets.title}</h1>
           <p className="text-muted-foreground">
-            Create embeddable widgets to showcase testimonials on your website.
+            {t.widgets.desc}
           </p>
         </div>
         <Button asChild>
           <Link href="/widgets/new">
             <PlusIcon className="size-4" />
-            Create Widget
+            {t.widgets.create_widget}
           </Link>
         </Button>
       </div>
@@ -64,15 +57,14 @@ export default async function WidgetsPage() {
       {widgetList.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <LayoutGridIcon className="mb-4 size-12 text-muted-foreground/40" />
-          <h3 className="text-lg font-medium">No widgets yet</h3>
+          <h3 className="text-lg font-medium">{t.widgets.no_widgets}</h3>
           <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-            Create your first widget to embed testimonials on your website. Choose
-            from Wall of Love, Carousel, or Badge layouts.
+            {t.widgets.no_widgets_desc}
           </p>
           <Button asChild className="mt-6">
             <Link href="/widgets/new">
               <PlusIcon className="size-4" />
-              Create Your First Widget
+              {t.widgets.create_first}
             </Link>
           </Button>
         </div>
@@ -93,7 +85,7 @@ export default async function WidgetsPage() {
                       <div>
                         <CardTitle className="text-base">{widget.name}</CardTitle>
                         <CardDescription>
-                          {widgetTypeLabels[widget.type]}
+                          {t.widgets.type_labels[widget.type]}
                         </CardDescription>
                       </div>
                     </div>
@@ -102,7 +94,7 @@ export default async function WidgetsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Testimonials</span>
+                    <span className="text-muted-foreground">{t.nav.testimonials}</span>
                     <span className="font-medium">{testimonialCount}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
@@ -117,7 +109,7 @@ export default async function WidgetsPage() {
                   </div>
                   <div className="flex gap-2 border-t pt-4">
                     <Button asChild variant="outline" size="sm" className="flex-1">
-                      <Link href={`/widgets/${widget.id}/edit`}>Edit</Link>
+                      <Link href={`/widgets/${widget.id}/edit`}>{t.common.edit}</Link>
                     </Button>
                     <CopyEmbedCodeButton embedCode={embedCode} />
                   </div>

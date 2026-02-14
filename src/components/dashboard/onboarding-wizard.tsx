@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useT } from '@/lib/i18n/context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,6 +26,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useT();
 
   // Step 1 state
   const [formName, setFormName] = useState('');
@@ -71,7 +73,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
       .maybeSingle();
 
     if (existing) {
-      setSlugError('This slug is already taken. Try a different name.');
+      setSlugError(t.forms.slug_taken);
       setIsSubmitting(false);
       return;
     }
@@ -91,7 +93,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
     if (error) {
       if (error.code === '23505') {
-        setSlugError('This slug is already taken. Try a different name.');
+        setSlugError(t.forms.slug_taken);
       } else {
         console.error('Error creating form:', error);
       }
@@ -137,16 +139,16 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
   }
 
   const steps = [
-    { label: 'Create Form', number: 1 },
-    { label: 'Share Link', number: 2 },
-    { label: 'Preview', number: 3 },
+    { label: t.onboarding.step1_title, number: 1 },
+    { label: t.onboarding.step2_title, number: 2 },
+    { label: t.onboarding.step3_title, number: 3 },
   ];
 
   return (
     <div className="mx-auto max-w-xl space-y-8">
       <div className="text-center">
         <h1 className="text-2xl font-bold tracking-tight">
-          Welcome to TestiSpark!
+          {t.onboarding.welcome}
         </h1>
         <p className="text-muted-foreground mt-1">
           Let&apos;s get you set up in 3 quick steps.
@@ -186,7 +188,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         <Card>
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold">
-              Step 1: Create your first collection form
+              {t.onboarding.step1_title}
             </h2>
             <p className="text-sm text-muted-foreground">
               This form will be the page where your customers leave testimonials.
@@ -194,7 +196,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
 
             <div className="space-y-3">
               <div>
-                <Label htmlFor="onb-name">Form Name</Label>
+                <Label htmlFor="onb-name">{t.onboarding.form_name}</Label>
                 <Input
                   id="onb-name"
                   placeholder="e.g. My SaaS Product"
@@ -203,7 +205,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="onb-slug">Slug</Label>
+                <Label htmlFor="onb-slug">{t.onboarding.form_slug}</Label>
                 <Input
                   id="onb-slug"
                   placeholder="my-saas-product"
@@ -222,7 +224,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 )}
               </div>
               <div>
-                <Label htmlFor="onb-headline">Headline (optional)</Label>
+                <Label htmlFor="onb-headline">{t.forms.headline}</Label>
                 <Input
                   id="onb-headline"
                   placeholder="We'd love to hear from you!"
@@ -235,7 +237,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             <div className="flex justify-between pt-2">
               <Button variant="ghost" onClick={handleSkip}>
                 <SkipForward className="mr-1 size-4" />
-                Skip Setup
+                {t.onboarding.skip}
               </Button>
               <Button
                 onClick={handleCreateForm}
@@ -246,7 +248,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
                 ) : (
                   <ArrowRight className="size-4" />
                 )}
-                Create & Continue
+                {t.common.create}
               </Button>
             </div>
           </CardContent>
@@ -257,7 +259,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         <Card>
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold">
-              Step 2: Share your collection link
+              {t.onboarding.step2_title}
             </h2>
             <p className="text-sm text-muted-foreground">
               Send this link to your customers so they can submit testimonials.
@@ -288,11 +290,11 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             <div className="flex justify-between pt-2">
               <Button variant="ghost" onClick={handleSkip}>
                 <SkipForward className="mr-1 size-4" />
-                Skip Setup
+                {t.onboarding.skip}
               </Button>
               <Button onClick={() => setStep(2)}>
                 <ArrowRight className="size-4" />
-                Next
+                {t.onboarding.next}
               </Button>
             </div>
           </CardContent>
@@ -303,7 +305,7 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
         <Card>
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold">
-              Step 3: See how testimonials look
+              {t.onboarding.step3_title}
             </h2>
             <p className="text-sm text-muted-foreground">
               Here&apos;s a preview of what a collected testimonial looks like in your dashboard.
@@ -346,11 +348,11 @@ export function OnboardingWizard({ userId }: OnboardingWizardProps) {
             <div className="flex justify-between pt-2">
               <Button variant="ghost" onClick={handleSkip}>
                 <SkipForward className="mr-1 size-4" />
-                Skip
+                {t.onboarding.skip}
               </Button>
               <Button onClick={handleFinish}>
                 <CheckCircle2 className="size-4" />
-                Done — Go to Dashboard
+                {t.onboarding.finish}
               </Button>
             </div>
           </CardContent>

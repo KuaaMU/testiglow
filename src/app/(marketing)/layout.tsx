@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { MessageSquareHeart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getDict } from "@/lib/i18n/server";
+import { LanguageToggle } from "@/components/language-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +11,8 @@ export default async function MarketingLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getDict();
+
   let isLoggedIn = false;
   try {
     const supabase = await createClient();
@@ -27,16 +31,17 @@ export default async function MarketingLayout({
             <span>TestiSpark</span>
           </Link>
           <nav className="hidden sm:flex items-center gap-6 text-sm text-gray-600">
-            <Link href="/#features" className="hover:text-gray-900">Features</Link>
-            <Link href="/pricing" className="hover:text-gray-900">Pricing</Link>
+            <Link href="/#features" className="hover:text-gray-900">{t.nav.features}</Link>
+            <Link href="/pricing" className="hover:text-gray-900">{t.nav.pricing}</Link>
           </nav>
           <div className="flex items-center gap-3">
+            <LanguageToggle variant="outline" />
             {isLoggedIn ? (
               <Link
                 href="/dashboard"
                 className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
               >
-                Go to Dashboard
+                {t.nav.go_to_dashboard}
               </Link>
             ) : (
               <>
@@ -44,13 +49,13 @@ export default async function MarketingLayout({
                   href="/login"
                   className="text-sm text-gray-600 hover:text-gray-900"
                 >
-                  Log in
+                  {t.nav.log_in}
                 </Link>
                 <Link
                   href="/signup"
                   className="text-sm bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
                 >
-                  Get Started Free
+                  {t.nav.get_started}
                 </Link>
               </>
             )}
@@ -64,11 +69,11 @@ export default async function MarketingLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-2">
             <MessageSquareHeart className="size-4 text-indigo-600" />
-            <span>&copy; {new Date().getFullYear()} TestiSpark. All rights reserved.</span>
+            <span>&copy; {new Date().getFullYear()} TestiSpark. {t.nav.rights}</span>
           </div>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-gray-700">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-gray-700">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-gray-700">{t.nav.privacy}</Link>
+            <Link href="/terms" className="hover:text-gray-700">{t.nav.terms}</Link>
           </div>
         </div>
       </footer>

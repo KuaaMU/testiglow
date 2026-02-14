@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Loader2Icon, StarIcon, SaveIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n/context';
 import {
   WidgetPreview,
   type WidgetType,
@@ -30,6 +31,7 @@ import {
 export default function NewWidgetPage() {
   const supabase = createClient();
   const router = useRouter();
+  const t = useT();
 
   // Form state
   const [name, setName] = useState('');
@@ -115,7 +117,7 @@ export default function NewWidgetPage() {
       });
 
       if (res.ok) {
-        toast.success('Widget created.');
+        toast.success(t.widgets.widget_created);
         router.push('/widgets');
       } else {
         const err = await res.json();
@@ -148,9 +150,9 @@ export default function NewWidgetPage() {
     <div className="mx-auto max-w-7xl space-y-6 p-4 md:p-8">
       {/* Page header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Create Widget</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t.widgets.create_widget}</h1>
         <p className="text-muted-foreground">
-          Configure how your testimonials will appear on your website.
+          {t.widgets.config_desc}
         </p>
       </div>
 
@@ -160,15 +162,15 @@ export default function NewWidgetPage() {
           {/* Basic Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Widget Settings</CardTitle>
+              <CardTitle>{t.widgets.widget_settings}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t.widgets.widget_name}</Label>
                 <Input
                   id="name"
-                  placeholder="My testimonial widget"
+                  placeholder={t.widgets.widget_name_placeholder}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -176,7 +178,7 @@ export default function NewWidgetPage() {
 
               {/* Type */}
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label>{t.widgets.type}</Label>
                 <Select
                   value={widgetType}
                   onValueChange={(v) => setWidgetType(v as WidgetType)}
@@ -185,19 +187,19 @@ export default function NewWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="wall">Wall of Love (Grid)</SelectItem>
-                    <SelectItem value="carousel">Carousel (Scrollable)</SelectItem>
-                    <SelectItem value="slider">Slider (One at a Time)</SelectItem>
-                    <SelectItem value="marquee">Marquee (Auto-scroll)</SelectItem>
-                    <SelectItem value="list">List (Vertical)</SelectItem>
-                    <SelectItem value="badge">Badge (Single)</SelectItem>
+                    <SelectItem value="wall">{t.widgets.type_wall}</SelectItem>
+                    <SelectItem value="carousel">{t.widgets.type_carousel}</SelectItem>
+                    <SelectItem value="slider">{t.widgets.type_slider}</SelectItem>
+                    <SelectItem value="marquee">{t.widgets.type_marquee}</SelectItem>
+                    <SelectItem value="list">{t.widgets.type_list}</SelectItem>
+                    <SelectItem value="badge">{t.widgets.type_badge}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Theme */}
               <div className="flex items-center justify-between">
-                <Label htmlFor="theme">Dark Theme</Label>
+                <Label htmlFor="theme">{t.widgets.dark_theme}</Label>
                 <Switch
                   id="theme"
                   checked={theme === 'dark'}
@@ -209,7 +211,7 @@ export default function NewWidgetPage() {
 
               {/* Card Style */}
               <div className="space-y-2">
-                <Label>Card Style</Label>
+                <Label>{t.widgets.card_style}</Label>
                 <Select
                   value={cardStyle}
                   onValueChange={(v) => setCardStyle(v as CardStyle)}
@@ -218,17 +220,17 @@ export default function NewWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bordered">Bordered</SelectItem>
-                    <SelectItem value="shadow">Shadow</SelectItem>
-                    <SelectItem value="flat">Flat</SelectItem>
-                    <SelectItem value="glass">Glass</SelectItem>
+                    <SelectItem value="bordered">{t.widgets.style_bordered}</SelectItem>
+                    <SelectItem value="shadow">{t.widgets.style_shadow}</SelectItem>
+                    <SelectItem value="flat">{t.widgets.style_flat}</SelectItem>
+                    <SelectItem value="glass">{t.widgets.style_glass}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Accent Color */}
               <div className="space-y-2">
-                <Label>Accent Color</Label>
+                <Label>{t.widgets.accent_color}</Label>
                 <div className="flex items-center gap-3">
                   <Input
                     type="color"
@@ -246,7 +248,7 @@ export default function NewWidgetPage() {
 
               {/* Font Size */}
               <div className="space-y-2">
-                <Label>Font Size</Label>
+                <Label>{t.widgets.font_size}</Label>
                 <Select
                   value={fontSize}
                   onValueChange={(v) => setFontSize(v as FontSize)}
@@ -255,9 +257,9 @@ export default function NewWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sm">Small</SelectItem>
-                    <SelectItem value="base">Medium</SelectItem>
-                    <SelectItem value="lg">Large</SelectItem>
+                    <SelectItem value="sm">{t.widgets.font_sm}</SelectItem>
+                    <SelectItem value="base">{t.widgets.font_base}</SelectItem>
+                    <SelectItem value="lg">{t.widgets.font_lg}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -265,7 +267,7 @@ export default function NewWidgetPage() {
               {/* Columns (wall only) */}
               {widgetType === 'wall' && (
                 <div className="space-y-2">
-                  <Label>Columns</Label>
+                  <Label>{t.widgets.columns}</Label>
                   <Select
                     value={String(columns)}
                     onValueChange={(v) => setColumns(Number(v))}
@@ -274,10 +276,10 @@ export default function NewWidgetPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 Column</SelectItem>
-                      <SelectItem value="2">2 Columns</SelectItem>
-                      <SelectItem value="3">3 Columns</SelectItem>
-                      <SelectItem value="4">4 Columns</SelectItem>
+                      <SelectItem value="1">{t.widgets.column_1}</SelectItem>
+                      <SelectItem value="2">{t.widgets.column_2}</SelectItem>
+                      <SelectItem value="3">{t.widgets.column_3}</SelectItem>
+                      <SelectItem value="4">{t.widgets.column_4}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -285,7 +287,7 @@ export default function NewWidgetPage() {
 
               {/* Max Items */}
               <div className="space-y-2">
-                <Label>Max Items</Label>
+                <Label>{t.widgets.max_items}</Label>
                 <Select
                   value={String(maxItems)}
                   onValueChange={(v) => setMaxItems(Number(v))}
@@ -296,7 +298,7 @@ export default function NewWidgetPage() {
                   <SelectContent>
                     {[3, 6, 9, 12, 15, 18, 21, 24].map((n) => (
                       <SelectItem key={n} value={String(n)}>
-                        {n} items
+                        {n} {t.common.items}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -306,7 +308,7 @@ export default function NewWidgetPage() {
               {/* Toggle switches */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showRating">Show Rating</Label>
+                  <Label htmlFor="showRating">{t.widgets.show_rating}</Label>
                   <Switch
                     id="showRating"
                     checked={showRating}
@@ -314,7 +316,7 @@ export default function NewWidgetPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showAvatar">Show Avatar</Label>
+                  <Label htmlFor="showAvatar">{t.widgets.show_avatar}</Label>
                   <Switch
                     id="showAvatar"
                     checked={showAvatar}
@@ -322,7 +324,7 @@ export default function NewWidgetPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showDate">Show Date</Label>
+                  <Label htmlFor="showDate">{t.widgets.show_date}</Label>
                   <Switch
                     id="showDate"
                     checked={showDate}
@@ -337,9 +339,9 @@ export default function NewWidgetPage() {
           <Card>
             <CardHeader>
               <CardTitle>
-                Select Testimonials{' '}
+                {t.widgets.select_testimonials}{' '}
                 <span className="text-sm font-normal text-muted-foreground">
-                  ({selectedIds.size} selected)
+                  ({selectedIds.size} {t.common.selected})
                 </span>
               </CardTitle>
             </CardHeader>
@@ -350,8 +352,7 @@ export default function NewWidgetPage() {
                 </div>
               ) : approvedTestimonials.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
-                  No approved testimonials available. Approve some testimonials
-                  first.
+                  {t.widgets.no_approved}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -369,7 +370,7 @@ export default function NewWidgetPage() {
                       className="size-4 rounded border-input accent-primary"
                     />
                     <span className="text-sm font-medium">
-                      {selectedIds.size === approvedTestimonials.length ? 'Deselect All' : 'Select All'}
+                      {selectedIds.size === approvedTestimonials.length ? t.common.deselect_all : t.common.select_all}
                     </span>
                   </label>
                   <div className="max-h-80 space-y-2 overflow-y-auto">
@@ -414,12 +415,12 @@ export default function NewWidgetPage() {
             {saving ? (
               <>
                 <Loader2Icon className="size-4 animate-spin" />
-                Creating Widget...
+                {t.widgets.creating}
               </>
             ) : (
               <>
                 <SaveIcon className="size-4" />
-                Create Widget
+                {t.widgets.create_widget}
               </>
             )}
           </Button>
@@ -427,7 +428,7 @@ export default function NewWidgetPage() {
 
         {/* Right: Live Preview */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Live Preview</h2>
+          <h2 className="text-lg font-semibold">{t.widgets.live_preview}</h2>
           <div
             className="overflow-hidden rounded-lg border"
             style={{
@@ -450,7 +451,7 @@ export default function NewWidgetPage() {
                 color: theme === 'light' ? '#94a3b8' : '#64748b',
               }}
             >
-              Powered by TestiSpark
+              {t.common.powered_by}
             </div>
           </div>
         </div>

@@ -28,6 +28,7 @@ import {
 import { Loader2Icon, StarIcon, SaveIcon, Trash2Icon, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n/context';
 import {
   WidgetPreview,
   type WidgetType,
@@ -42,6 +43,7 @@ export default function EditWidgetPage() {
   const router = useRouter();
   const params = useParams();
   const widgetId = params.id as string;
+  const t = useT();
 
   const [loading, setLoading] = useState(true);
 
@@ -165,7 +167,7 @@ export default function EditWidgetPage() {
       });
 
       if (res.ok) {
-        toast.success('Widget updated.');
+        toast.success(t.widgets.widget_updated);
         router.push('/widgets');
       } else {
         const err = await res.json();
@@ -184,7 +186,7 @@ export default function EditWidgetPage() {
     try {
       const res = await fetch(`/api/widgets/${widgetId}`, { method: 'DELETE' });
       if (res.ok) {
-        toast.success('Widget deleted.');
+        toast.success(t.widgets.widget_deleted);
         router.push('/widgets');
       } else {
         toast.error('Failed to delete widget.');
@@ -228,9 +230,9 @@ export default function EditWidgetPage() {
           </Link>
         </Button>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Edit Widget</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t.widgets.edit_widget}</h1>
           <p className="text-muted-foreground">
-            Update your widget configuration and selected testimonials.
+            {t.widgets.edit_desc}
           </p>
         </div>
       </div>
@@ -241,15 +243,15 @@ export default function EditWidgetPage() {
           {/* Basic Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Widget Settings</CardTitle>
+              <CardTitle>{t.widgets.widget_settings}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5">
               {/* Name */}
               <div className="space-y-2">
-                <Label htmlFor="name">Name</Label>
+                <Label htmlFor="name">{t.widgets.widget_name}</Label>
                 <Input
                   id="name"
-                  placeholder="My testimonial widget"
+                  placeholder={t.widgets.widget_name_placeholder}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
@@ -257,7 +259,7 @@ export default function EditWidgetPage() {
 
               {/* Type */}
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label>{t.widgets.type}</Label>
                 <Select
                   value={widgetType}
                   onValueChange={(v) => setWidgetType(v as WidgetType)}
@@ -266,19 +268,19 @@ export default function EditWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="wall">Wall of Love (Grid)</SelectItem>
-                    <SelectItem value="carousel">Carousel (Scrollable)</SelectItem>
-                    <SelectItem value="slider">Slider (One at a Time)</SelectItem>
-                    <SelectItem value="marquee">Marquee (Auto-scroll)</SelectItem>
-                    <SelectItem value="list">List (Vertical)</SelectItem>
-                    <SelectItem value="badge">Badge (Single)</SelectItem>
+                    <SelectItem value="wall">{t.widgets.type_wall}</SelectItem>
+                    <SelectItem value="carousel">{t.widgets.type_carousel}</SelectItem>
+                    <SelectItem value="slider">{t.widgets.type_slider}</SelectItem>
+                    <SelectItem value="marquee">{t.widgets.type_marquee}</SelectItem>
+                    <SelectItem value="list">{t.widgets.type_list}</SelectItem>
+                    <SelectItem value="badge">{t.widgets.type_badge}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Theme */}
               <div className="flex items-center justify-between">
-                <Label htmlFor="theme">Dark Theme</Label>
+                <Label htmlFor="theme">{t.widgets.dark_theme}</Label>
                 <Switch
                   id="theme"
                   checked={theme === 'dark'}
@@ -290,7 +292,7 @@ export default function EditWidgetPage() {
 
               {/* Card Style */}
               <div className="space-y-2">
-                <Label>Card Style</Label>
+                <Label>{t.widgets.card_style}</Label>
                 <Select
                   value={cardStyle}
                   onValueChange={(v) => setCardStyle(v as CardStyle)}
@@ -299,17 +301,17 @@ export default function EditWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="bordered">Bordered</SelectItem>
-                    <SelectItem value="shadow">Shadow</SelectItem>
-                    <SelectItem value="flat">Flat</SelectItem>
-                    <SelectItem value="glass">Glass</SelectItem>
+                    <SelectItem value="bordered">{t.widgets.style_bordered}</SelectItem>
+                    <SelectItem value="shadow">{t.widgets.style_shadow}</SelectItem>
+                    <SelectItem value="flat">{t.widgets.style_flat}</SelectItem>
+                    <SelectItem value="glass">{t.widgets.style_glass}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {/* Accent Color */}
               <div className="space-y-2">
-                <Label>Accent Color</Label>
+                <Label>{t.widgets.accent_color}</Label>
                 <div className="flex items-center gap-3">
                   <Input
                     type="color"
@@ -327,7 +329,7 @@ export default function EditWidgetPage() {
 
               {/* Font Size */}
               <div className="space-y-2">
-                <Label>Font Size</Label>
+                <Label>{t.widgets.font_size}</Label>
                 <Select
                   value={fontSize}
                   onValueChange={(v) => setFontSize(v as FontSize)}
@@ -336,9 +338,9 @@ export default function EditWidgetPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="sm">Small</SelectItem>
-                    <SelectItem value="base">Medium</SelectItem>
-                    <SelectItem value="lg">Large</SelectItem>
+                    <SelectItem value="sm">{t.widgets.font_sm}</SelectItem>
+                    <SelectItem value="base">{t.widgets.font_base}</SelectItem>
+                    <SelectItem value="lg">{t.widgets.font_lg}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -346,7 +348,7 @@ export default function EditWidgetPage() {
               {/* Columns (wall only) */}
               {widgetType === 'wall' && (
                 <div className="space-y-2">
-                  <Label>Columns</Label>
+                  <Label>{t.widgets.columns}</Label>
                   <Select
                     value={String(columns)}
                     onValueChange={(v) => setColumns(Number(v))}
@@ -355,10 +357,10 @@ export default function EditWidgetPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 Column</SelectItem>
-                      <SelectItem value="2">2 Columns</SelectItem>
-                      <SelectItem value="3">3 Columns</SelectItem>
-                      <SelectItem value="4">4 Columns</SelectItem>
+                      <SelectItem value="1">{t.widgets.column_1}</SelectItem>
+                      <SelectItem value="2">{t.widgets.column_2}</SelectItem>
+                      <SelectItem value="3">{t.widgets.column_3}</SelectItem>
+                      <SelectItem value="4">{t.widgets.column_4}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -366,7 +368,7 @@ export default function EditWidgetPage() {
 
               {/* Max Items */}
               <div className="space-y-2">
-                <Label>Max Items</Label>
+                <Label>{t.widgets.max_items}</Label>
                 <Select
                   value={String(maxItems)}
                   onValueChange={(v) => setMaxItems(Number(v))}
@@ -377,7 +379,7 @@ export default function EditWidgetPage() {
                   <SelectContent>
                     {[3, 6, 9, 12, 15, 18, 21, 24].map((n) => (
                       <SelectItem key={n} value={String(n)}>
-                        {n} items
+                        {n} {t.common.items}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -387,7 +389,7 @@ export default function EditWidgetPage() {
               {/* Toggle switches */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showRating">Show Rating</Label>
+                  <Label htmlFor="showRating">{t.widgets.show_rating}</Label>
                   <Switch
                     id="showRating"
                     checked={showRating}
@@ -395,7 +397,7 @@ export default function EditWidgetPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showAvatar">Show Avatar</Label>
+                  <Label htmlFor="showAvatar">{t.widgets.show_avatar}</Label>
                   <Switch
                     id="showAvatar"
                     checked={showAvatar}
@@ -403,7 +405,7 @@ export default function EditWidgetPage() {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="showDate">Show Date</Label>
+                  <Label htmlFor="showDate">{t.widgets.show_date}</Label>
                   <Switch
                     id="showDate"
                     checked={showDate}
@@ -418,9 +420,9 @@ export default function EditWidgetPage() {
           <Card>
             <CardHeader>
               <CardTitle>
-                Select Testimonials{' '}
+                {t.widgets.select_testimonials}{' '}
                 <span className="text-sm font-normal text-muted-foreground">
-                  ({selectedIds.size} selected)
+                  ({selectedIds.size} {t.common.selected})
                 </span>
               </CardTitle>
             </CardHeader>
@@ -431,7 +433,7 @@ export default function EditWidgetPage() {
                 </div>
               ) : approvedTestimonials.length === 0 ? (
                 <p className="py-6 text-center text-sm text-muted-foreground">
-                  No approved testimonials available.
+                  {t.widgets.no_approved}
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -455,8 +457,8 @@ export default function EditWidgetPage() {
                     />
                     <span className="text-sm font-medium">
                       {selectedIds.size === approvedTestimonials.length
-                        ? 'Deselect All'
-                        : 'Select All'}
+                        ? t.common.deselect_all
+                        : t.common.select_all}
                     </span>
                   </label>
                   <div className="max-h-80 space-y-2 overflow-y-auto">
@@ -502,12 +504,12 @@ export default function EditWidgetPage() {
               {saving ? (
                 <>
                   <Loader2Icon className="size-4 animate-spin" />
-                  Saving...
+                  {t.widgets.saving}
                 </>
               ) : (
                 <>
                   <SaveIcon className="size-4" />
-                  Save Changes
+                  {t.forms.save_changes}
                 </>
               )}
             </Button>
@@ -519,10 +521,9 @@ export default function EditWidgetPage() {
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Delete Widget</DialogTitle>
+                  <DialogTitle>{t.widgets.delete_widget}</DialogTitle>
                   <DialogDescription>
-                    Are you sure you want to delete &quot;{name}&quot;? This action
-                    cannot be undone.
+                    {t.widgets.delete_widget_desc_1} &quot;{name}&quot;{t.widgets.delete_widget_desc_2}
                   </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -530,7 +531,7 @@ export default function EditWidgetPage() {
                     variant="outline"
                     onClick={() => setDeleteDialogOpen(false)}
                   >
-                    Cancel
+                    {t.common.cancel}
                   </Button>
                   <Button
                     variant="destructive"
@@ -540,10 +541,10 @@ export default function EditWidgetPage() {
                     {deleting ? (
                       <>
                         <Loader2Icon className="size-4 animate-spin" />
-                        Deleting...
+                        {t.testimonials.deleting}
                       </>
                     ) : (
-                      'Delete'
+                      t.common.delete
                     )}
                   </Button>
                 </DialogFooter>
@@ -554,7 +555,7 @@ export default function EditWidgetPage() {
 
         {/* Right: Live Preview */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold">Live Preview</h2>
+          <h2 className="text-lg font-semibold">{t.widgets.live_preview}</h2>
           <div
             className="overflow-hidden rounded-lg border"
             style={{
@@ -577,7 +578,7 @@ export default function EditWidgetPage() {
                 color: theme === 'light' ? '#94a3b8' : '#64748b',
               }}
             >
-              Powered by TestiSpark
+              {t.common.powered_by}
             </div>
           </div>
         </div>

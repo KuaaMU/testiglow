@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '@/lib/i18n/context';
 import type { Question } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,6 +22,7 @@ interface QuestionsEditorProps {
 }
 
 export function QuestionsEditor({ questions, onChange }: QuestionsEditorProps) {
+  const t = useT();
   function addQuestion() {
     const newQ: Question = {
       id: crypto.randomUUID(),
@@ -52,7 +54,7 @@ export function QuestionsEditor({ questions, onChange }: QuestionsEditorProps) {
           <div className="flex-1 space-y-2">
             <div className="flex gap-2">
               <Input
-                placeholder="Question text..."
+                placeholder={t.questions.text}
                 value={q.text}
                 onChange={(e) =>
                   updateQuestion(q.id, { text: e.target.value })
@@ -69,8 +71,8 @@ export function QuestionsEditor({ questions, onChange }: QuestionsEditorProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="text">Text</SelectItem>
-                  <SelectItem value="rating">Rating</SelectItem>
+                  <SelectItem value="text">{t.questions.type_text}</SelectItem>
+                  <SelectItem value="rating">{t.questions.type_rating}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -83,7 +85,7 @@ export function QuestionsEditor({ questions, onChange }: QuestionsEditorProps) {
                 }
               />
               <Label htmlFor={`required-${q.id}`} className="text-xs text-muted-foreground">
-                Required
+                {t.questions.required}
               </Label>
             </div>
           </div>
@@ -107,7 +109,7 @@ export function QuestionsEditor({ questions, onChange }: QuestionsEditorProps) {
         className="w-full gap-1.5"
       >
         <Plus className="size-3.5" />
-        Add Question
+        {t.questions.add}
       </Button>
     </div>
   );

@@ -8,6 +8,7 @@ import {
   Calendar,
   MessageSquare,
   Pencil,
+  Globe,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -156,6 +157,16 @@ export default async function FormsPage() {
                   >
                     <ExternalLink className="size-3.5" />
                     Preview
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={`/wall/${form.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Globe className="size-3.5" />
+                    Wall
                   </Link>
                 </Button>
                 <CopyUrlButton url={`${baseUrl}/collect/${form.slug}`} />

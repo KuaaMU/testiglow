@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LemonSqueezyCheckoutButton } from "@/components/dashboard/lemonsqueezy-checkout";
 import { CryptoCheckoutButton } from "@/components/dashboard/crypto-checkout";
+import { ProfileForm } from "@/components/dashboard/profile-form";
 import { getCheckoutUrl } from "@/lib/lemonsqueezy";
 import { PRO_PRICE_MONTHLY } from "@/types";
 
@@ -38,19 +39,14 @@ export default async function SettingsPage() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
       <div className="space-y-6 max-w-2xl">
+        <ProfileForm userId={user!.id} initialName={profile?.full_name || ""} />
+
         <Card>
           <CardHeader>
-            <CardTitle>Account</CardTitle>
+            <CardTitle>Email</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-500">Name</label>
-              <p className="text-gray-900">{profile?.full_name || "Not set"}</p>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-gray-500">Email</label>
-              <p className="text-gray-900">{profile?.email || user?.email}</p>
-            </div>
+          <CardContent>
+            <p className="text-gray-900">{profile?.email || user?.email}</p>
           </CardContent>
         </Card>
 

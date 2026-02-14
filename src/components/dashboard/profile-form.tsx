@@ -1,0 +1,70 @@
+'use client';
+
+import { useState } from 'react';
+import { createClient } from '@/lib/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2, Save } from 'lucide-react';
+import { toast } from 'sonner';
+
+interface ProfileFormProps {
+  userId: string;
+  initialName: string;
+}
+
+export function ProfileForm({ userId, initialName }: ProfileFormProps) {
+  const [name, setName] = useState(initialName);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSave() {
+    if (!name.trim()) return;
+    setSaving(true);
+
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ full_name: name.trim() })
+      .eq('id', userId);
+
+    if (error) {
+      toast.error('Failed to update name.');
+    } else {
+      toast.success('Profile updated.');
+    }
+    setSaving(false);
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Account</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="full_name">Name</Label>
+          <div className="flex gap-2">
+            <Input
+              id="full_name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+            />
+            <Button
+              onClick={handleSave}
+              disabled={saving || !name.trim() || name === initialName}
+              size="icon"
+            >
+              {saving ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <Save className="size-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

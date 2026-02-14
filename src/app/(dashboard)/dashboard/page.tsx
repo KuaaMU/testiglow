@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { MessageSquare, FileText, Code2, Clock, Plus } from "lucide-react";
+import { MessageSquare, FileText, Code2, Clock, Plus, StarIcon, ArrowRight } from "lucide-react";
 import { OnboardingWizard } from "@/components/dashboard/onboarding-wizard";
+import type { Testimonial } from "@/types";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -36,6 +37,17 @@ export default async function DashboardPage() {
     .from("widgets")
     .select("*", { count: "exact", head: true })
     .eq("user_id", user!.id);
+
+  // Fetch recent pending testimonials for quick review
+  const { data: recentPending } = await supabase
+    .from("testimonials")
+    .select("*")
+    .eq("user_id", user!.id)
+    .eq("status", "pending")
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  const recentTestimonials = (recentPending || []) as Testimonial[];
 
   // Show onboarding wizard for new users with no forms
   if ((formsCount ?? 0) === 0 && !profile?.onboarding_completed) {
@@ -92,6 +104,68 @@ export default async function DashboardPage() {
           <Link href="/testimonials">View Testimonials</Link>
         </Button>
       </div>
+
+      {/* Recent Pending Testimonials */}
+      {recentTestimonials.length > 0 && (
+        <div className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Pending Review</h2>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/testimonials" className="gap-1.5">
+                View all
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {recentTestimonials.map((t) => {
+              const initial = t.author_name?.charAt(0)?.toUpperCase() || '?';
+              return (
+                <Card key={t.id}>
+                  <CardContent className="flex items-start gap-4 py-4">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-600">
+                      {initial}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-gray-900">{t.author_name}</p>
+                        {t.author_company && (
+                          <span className="text-xs text-gray-500">{t.author_company}</span>
+                        )}
+                      </div>
+                      {t.rating !== null && (
+                        <div className="mt-1 flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <StarIcon
+                              key={i}
+                              className={`size-3 ${
+                                i < (t.rating ?? 0)
+                                  ? 'fill-yellow-400 text-yellow-400'
+                                  : 'text-gray-200'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                      <p className="mt-1 text-sm text-gray-600 line-clamp-2">
+                        {t.content}
+                      </p>
+                      <p className="mt-1 text-xs text-gray-400">
+                        {new Date(t.created_at).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="shrink-0 bg-yellow-100 text-yellow-800 border-yellow-300">
+                      Pending
+                    </Badge>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

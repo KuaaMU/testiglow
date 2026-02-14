@@ -12,6 +12,7 @@ import {
   Check,
   Trash2,
   ExternalLink,
+  Globe,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -22,6 +23,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { toast } from 'sonner';
 import {
   Card,
   CardContent,
@@ -170,6 +172,9 @@ export default function EditFormPage() {
 
     if (!error) {
       setIsActive(newActive);
+      toast.success(newActive ? 'Form activated.' : 'Form paused.');
+    } else {
+      toast.error('Failed to update form status.');
     }
   }
 
@@ -216,11 +221,13 @@ export default function EditFormPage() {
           setSlugError('This slug is already taken. Please choose a different one.');
         } else {
           console.error('Error updating form:', error);
+          toast.error('Failed to save form.');
         }
         setIsSaving(false);
         return;
       }
 
+      toast.success('Form saved successfully.');
       router.push('/forms');
       router.refresh();
     } catch (err) {
@@ -307,6 +314,35 @@ export default function EditFormPage() {
                 title="Open collection page"
               >
                 <ExternalLink className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Public Wall URL Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Public Wall</CardTitle>
+          <CardDescription>
+            A public page showcasing all approved testimonials for this form.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <div className="bg-muted flex-1 truncate rounded-md border px-3 py-2 font-mono text-sm">
+              {typeof window !== 'undefined'
+                ? `${window.location.origin}/wall/${form.watch('slug')}`
+                : `/wall/${form.watch('slug')}`}
+            </div>
+            <Button variant="outline" size="icon" asChild>
+              <Link
+                href={`/wall/${form.watch('slug')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Open public wall"
+              >
+                <Globe className="size-4" />
               </Link>
             </Button>
           </div>

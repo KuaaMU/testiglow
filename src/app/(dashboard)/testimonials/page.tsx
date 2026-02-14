@@ -37,8 +37,11 @@ import {
   ShareIcon,
   DownloadIcon,
   VideoIcon,
+  CheckCheck,
+  XIcon,
 } from 'lucide-react';
 import { SocialCardDialog } from '@/components/dashboard/social-card-dialog';
+import { toast } from 'sonner';
 
 const PAGE_SIZE = 12;
 
@@ -65,6 +68,9 @@ export default function TestimonialsPage() {
   // Form filter state
   const [forms, setForms] = useState<Form[]>([]);
   const [formFilter, setFormFilter] = useState<string>('all');
+
+  // Bulk action state
+  const [bulkLoading, setBulkLoading] = useState(false);
 
   const fetchTestimonials = useCallback(
     async (pageNum: number, append = false) => {
@@ -162,6 +168,9 @@ export default function TestimonialsPage() {
       setTestimonials((prev) =>
         prev.map((t) => (t.id === id ? { ...t, status } : t))
       );
+      toast.success(`Testimonial ${status}.`);
+    } else {
+      toast.error('Failed to update status.');
     }
     setActionLoading((prev) => ({ ...prev, [id]: false }));
   };
@@ -177,6 +186,9 @@ export default function TestimonialsPage() {
       setTestimonials((prev) =>
         prev.map((t) => (t.id === id ? { ...t, is_featured: !current } : t))
       );
+      toast.success(!current ? 'Marked as featured.' : 'Removed from featured.');
+    } else {
+      toast.error('Failed to update.');
     }
     setActionLoading((prev) => ({ ...prev, [`feat-${id}`]: false }));
   };
@@ -191,6 +203,9 @@ export default function TestimonialsPage() {
 
     if (!error) {
       setTestimonials((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+      toast.success('Testimonial deleted.');
+    } else {
+      toast.error('Failed to delete testimonial.');
     }
     setActionLoading((prev) => ({ ...prev, [`del-${deleteTarget.id}`]: false }));
     setDeleteTarget(null);
@@ -214,9 +229,13 @@ export default function TestimonialsPage() {
               : t
           )
         );
+        toast.success('AI summary generated.');
+      } else {
+        toast.error('AI summarize failed.');
       }
     } catch (err) {
       console.error('Summarize failed:', err);
+      toast.error('AI summarize failed.');
     }
     setActionLoading((prev) => ({ ...prev, [`ai-${id}`]: false }));
   };
@@ -224,6 +243,48 @@ export default function TestimonialsPage() {
   const getFormName = (formId: string) => {
     const f = forms.find((form) => form.id === formId);
     return f?.name || '';
+  };
+
+  const pendingTestimonials = testimonials.filter((t) => t.status === 'pending');
+
+  const handleBulkApprove = async () => {
+    const ids = pendingTestimonials.map((t) => t.id);
+    if (ids.length === 0) return;
+    setBulkLoading(true);
+    const { error } = await supabase
+      .from('testimonials')
+      .update({ status: 'approved' })
+      .in('id', ids);
+
+    if (!error) {
+      setTestimonials((prev) =>
+        prev.map((t) => (ids.includes(t.id) ? { ...t, status: 'approved' as const } : t))
+      );
+      toast.success(`${ids.length} testimonial${ids.length > 1 ? 's' : ''} approved.`);
+    } else {
+      toast.error('Bulk approve failed.');
+    }
+    setBulkLoading(false);
+  };
+
+  const handleBulkReject = async () => {
+    const ids = pendingTestimonials.map((t) => t.id);
+    if (ids.length === 0) return;
+    setBulkLoading(true);
+    const { error } = await supabase
+      .from('testimonials')
+      .update({ status: 'rejected' })
+      .in('id', ids);
+
+    if (!error) {
+      setTestimonials((prev) =>
+        prev.map((t) => (ids.includes(t.id) ? { ...t, status: 'rejected' as const } : t))
+      );
+      toast.success(`${ids.length} testimonial${ids.length > 1 ? 's' : ''} rejected.`);
+    } else {
+      toast.error('Bulk reject failed.');
+    }
+    setBulkLoading(false);
   };
 
   const statusBadge = (status: Testimonial['status']) => {
@@ -480,6 +541,9 @@ export default function TestimonialsPage() {
                   a.download = `testimonials-${new Date().toISOString().slice(0, 10)}.csv`;
                   a.click();
                   URL.revokeObjectURL(url);
+                  toast.success('CSV exported.');
+                } else {
+                  toast.error('Export failed.');
                 }
               }}
             >
@@ -517,6 +581,35 @@ export default function TestimonialsPage() {
           </Select>
         )}
       </div>
+
+      {/* Bulk Actions */}
+      {pendingTestimonials.length > 0 && (
+        <div className="flex items-center gap-3 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
+          <p className="flex-1 text-sm text-yellow-800">
+            <span className="font-medium">{pendingTestimonials.length}</span> pending testimonial{pendingTestimonials.length > 1 ? 's' : ''} awaiting review.
+          </p>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleBulkApprove}
+            disabled={bulkLoading}
+            className="gap-1.5 border-green-300 text-green-700 hover:bg-green-50"
+          >
+            {bulkLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : <CheckCheck className="size-3.5" />}
+            Approve All
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleBulkReject}
+            disabled={bulkLoading}
+            className="gap-1.5 border-red-300 text-red-700 hover:bg-red-50"
+          >
+            {bulkLoading ? <Loader2Icon className="size-3.5 animate-spin" /> : <XIcon className="size-3.5" />}
+            Reject All
+          </Button>
+        </div>
+      )}
 
       {/* Tabs */}
       <Tabs
